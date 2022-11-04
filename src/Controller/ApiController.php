@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\SyncJob;
+use JsonException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
+use Symfony\Component\Serializer\Serializer;
+
+#[Route('/api')]
+class ApiController extends AbstractController {
+    public function __construct() {}
+
+    #[Route('/job/{id}/log', name: 'get_job_log_json')]
+    public function getJobLog(SyncJob $job): JsonResponse {
+        $text = $job->getLog();
+        try {
+            json_decode($text, flags: JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return new JsonResponse([$text]);
+        }
+        return new JsonResponse($text, json: true);
+    }
+
+    private function entityToJson($entities): JsonResponse {
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new DateTimeNormalizer(), new GetSetMethodNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+        $dataJson = $serializer->serialize($entities, 'json');
+
+        $response = new JsonResponse($dataJson, json: true);
+        $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
+        return $response;
+    }
+
+}

@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Jobs{% endblock %}
+
+{% block body %}
+<h3 class="page-title">Rota processing jobs{% if placement is defined and placement is not null %} for {{ placement.name }}{% endif %}</h3>
+<div {{ stimulus_controller('modal') }}>
+    {{ include('_modal.html.twig') }}
+    <table class="table" >
+        <thead>
+            <tr>
+                <th>Job number</th>
+                <th>Placement</th>
+                <th>Processor</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td>{{ job.id }}</td>
+                <td>{{ job.placement.name }}</td>
+                <td>{{ parsers[job.placement.processor].parserName }}</td>
+                <td>{{ job.statusAsString }}</td>
+                <td>
+                    <button
+                            class="btn btn-secondary btn-sm"
+                            data-action="modal#openModal"
+                            data-url="{{ path('get_job_log_json', {'id': job.id}) }}"
+                            data-title="Log for job {{ job.id }}"
+                    >View log</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+

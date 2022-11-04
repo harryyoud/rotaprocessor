@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Welcome!{% endblock %}
+
+{% block body %}
+    <h3 class="page-title">Welcome!</h3>
+    <p>This is a rota processor tool, designed to trawl your rota spreadsheets and add the shifts
+        to a remote calendar</p>
+    <h4>Usage</h4>
+    <ol>
+        <li>
+            Create a placement, choosing a suitable processor for your spreadsheet, and choose
+            "Built-in WebCal Calendar"
+            <ul>
+                <li>The prefix will be added to the beginning of the name for each shift, leave
+                    blank if not needed</li>
+            </ul>
+        </li>
+        <li>Upload the spreadsheet to the placement and wait for its processing to complete on the
+            jobs page</li>
+        <li>Copy the iCal link from the placements page and import this on to your device or into
+            Google Calendar
+        </li>
+    </ol>
+    <h4>Getting help</h4>
+    <p>Please speak to the person that gave you access to this system for any issues with processing
+        rotas, or requesting new rota format support</p>
+{% endblock %}
+

@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Placements{% endblock %}
+
+{% block body %}
+<h3 class="page-title">Placements</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Processor</th>
+            <th>Calendar</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for placement in placements %}
+        <tr>
+            <td>{{ placement.name }}</td>
+            <td>{{ parsers[placement.processor].parserName }}</td>
+            <td>
+                {% if placement.calendar %}
+                    {{ placement.calendar.name }}
+                {% else %}
+                    Built-in WebCal Calendar
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ path('upload', {id: placement.id}) }}">Upload new rota</a>
+                | <a href="{{ path('list_jobs_by_placement', {id: placement.id}) }}">View jobs</a>
+                | <a href="{{ path('edit_placement', {id: placement.id}) }}">Edit</a>
+                {% if placement.calendar is null %}
+                    | <a href="{{ path('ical_placement', {id: placement.id}) }}">iCal Link</a>
+                {% endif %}
+                | <a href="{{ path('delete_placement', {id: placement.id}) }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="20">
+                <a href="{{ path('new_placement') }}" class="btn btn-secondary" style="width: 100%;">+ New Placement</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
+
