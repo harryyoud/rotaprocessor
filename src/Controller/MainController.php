@@ -16,6 +16,7 @@ use App\Security\CalendarVoter;
 use App\Security\PlacementVoter;
 use App\SheetParsers\SheetParsers;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,6 +36,7 @@ class MainController extends AbstractController {
         private readonly EntityManagerInterface $em,
         private readonly KernelInterface $kernel,
         private readonly MessageBusInterface $bus,
+        private readonly PaginatorInterface $paginator,
     ) {}
 
     protected function getUser(): ?User {
@@ -86,11 +88,20 @@ class MainController extends AbstractController {
 
     #[Route('/placement/{id}/jobs', name: 'list_jobs_by_placement')]
     #[IsGranted(PlacementVoter::VIEW_JOBS, subject: 'placement')]
-    public function listJobsByPlacement(Placement $placement): Response {
-        $jobs = $placement->getJobs();
+    public function listJobsByPlacement(Placement $placement, Request $request): Response {
+        $qb = $this->em->createQueryBuilder()
+            ->select(SyncJob::class, 'j')
+            ->where('j.placement = ?', $placement)
+            ->orderBy('j.id', 'DESC')
+        ;
         $parsers = $this->parsers->getParsers();
+        $pagination = $this->paginator->paginate(
+            $qb,
+            $request->query->getInt('page', 1),
+            10
+        );
         return $this->render('jobs.html.twig', [
-            'jobs' => array_reverse($jobs),
+            'pagination' => $pagination,
             'placement' => $placement,
             'parsers' => $parsers,
         ]);
@@ -144,11 +155,22 @@ class MainController extends AbstractController {
     }
 
     #[Route('/jobs', name: 'list_jobs')]
-    public function listJobs(): Response {
-        $jobs = $this->getUser()->getJobs();
+    public function listJobs(Request $request): Response {
+        $qb = $this->em->createQueryBuilder()
+            ->select('j')
+            ->from(SyncJob::class, 'j')
+            ->where('j.owner = :owner')
+            ->setParameter('owner', $this->getUser())
+            ->orderBy('j.id', 'DESC')
+        ;
         $parsers = $this->parsers->getParsers();
+        $pagination = $this->paginator->paginate(
+            $qb,
+            $request->query->getInt('page', 1),
+            10
+        );
         return $this->render('jobs.html.twig', [
-            'jobs' => array_reverse($jobs),
+            'pagination' => $pagination,
             'parsers' => $parsers,
         ]);
     }
