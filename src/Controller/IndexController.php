@@ -71,7 +71,7 @@ class IndexController extends AbstractController {
         $jobs = $placement->getJobs();
         $parsers = $this->parsers->getParsers();
         return $this->render('jobs.html.twig', [
-            'jobs' => $jobs,
+            'jobs' => array_reverse($jobs),
             'placement' => $placement,
             'parsers' => $parsers,
         ]);
@@ -126,7 +126,7 @@ class IndexController extends AbstractController {
         $jobs = $this->em->getRepository(SyncJob::class)->findAll();
         $parsers = $this->parsers->getParsers();
         return $this->render('jobs.html.twig', [
-            'jobs' => $jobs,
+            'jobs' => array_reverse($jobs),
             'parsers' => $parsers,
         ]);
     }
