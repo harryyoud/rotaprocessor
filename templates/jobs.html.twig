@@ -9,7 +9,7 @@
     <table class="table" >
         <thead>
             <tr>
-                <th>Job number</th>
+                <th>Created</th>
                 <th>Placement</th>
                 <th>Processor</th>
                 <th>Status</th>
@@ -19,7 +19,7 @@
         <tbody>
             {% for job in pagination %}
             <tr>
-                <td>{{ job.id }}</td>
+                <td>{{ job.createdAt | ago }}</td>
                 <td>{{ job.placement.name }}</td>
                 <td>{{ parsers[job.placement.processor].parserName }}</td>
                 <td>{{ job.statusAsString }}</td>

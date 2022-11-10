@@ -38,6 +38,9 @@
     "knplabs/knp-paginator-bundle": {
         "version": "v6.0.0"
     },
+    "knplabs/knp-time-bundle": {
+        "version": "v1.20.0"
+    },
     "sensio/framework-extra-bundle": {
         "version": "6.2",
         "recipe": {

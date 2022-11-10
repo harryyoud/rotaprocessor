@@ -2,9 +2,12 @@
 
 namespace App\Entity;
 
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
 class SyncJob {
     const STATUS_CREATED = 0;
     const STATUS_PENDING = 1;
@@ -30,6 +33,9 @@ class SyncJob {
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'jobs')]
     private ?User $owner = null;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private ?DateTimeImmutable $createdAt = null;
 
     public function __construct(Placement $placement, string $filename) {
         $this->placement = $placement;
@@ -106,6 +112,18 @@ class SyncJob {
      */
     public function setOwner(?User $owner): void {
         $this->owner = $owner;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void {
+        $this->createdAt = new DateTimeImmutable();
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getCreatedAt(): ?DateTimeImmutable {
+        return $this->createdAt;
     }
 
 }

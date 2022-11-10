@@ -90,9 +90,11 @@ class MainController extends AbstractController {
     #[IsGranted(PlacementVoter::VIEW_JOBS, subject: 'placement')]
     public function listJobsByPlacement(Placement $placement, Request $request): Response {
         $qb = $this->em->createQueryBuilder()
-            ->select(SyncJob::class, 'j')
-            ->where('j.placement = ?', $placement)
-            ->orderBy('j.id', 'DESC')
+            ->select('j')
+            ->from(SyncJob::class, 'j')
+            ->where('j.placement = :placement')
+            ->setParameter('placement', $placement)
+            ->orderBy('j.createdAt', 'ASC')
         ;
         $parsers = $this->parsers->getParsers();
         $pagination = $this->paginator->paginate(
@@ -161,7 +163,7 @@ class MainController extends AbstractController {
             ->from(SyncJob::class, 'j')
             ->where('j.owner = :owner')
             ->setParameter('owner', $this->getUser())
-            ->orderBy('j.id', 'DESC')
+            ->orderBy('j.createdAt', 'ASC')
         ;
         $parsers = $this->parsers->getParsers();
         $pagination = $this->paginator->paginate(

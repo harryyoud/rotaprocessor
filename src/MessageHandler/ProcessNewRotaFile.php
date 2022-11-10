@@ -37,7 +37,7 @@ class ProcessNewRotaFile {
         $this->em->persist($job);
         $this->em->flush();
 
-//        try {
+        try {
             $placement = $job->getPlacement();
             $parser = $this->parsers->getParser($placement->getProcessor());
             if (is_null($parser)) {
@@ -68,14 +68,14 @@ class ProcessNewRotaFile {
                 $job->markSuccess($out);
             }
 
-//        } catch (Throwable $e) {
-//            $job->markFailed(json_encode([
-//                'type' => $e::class,
-//                'where' => 'PHP - '.$e->getFile().':'.$e->getLine(),
-//                'detail' => $e->getMessage(),
-//                'reason' => 'No reason',
-//            ]));
-//        }
+        } catch (Throwable $e) {
+            $job->markFailed(json_encode([
+                'type' => $e::class,
+                'where' => 'PHP - '.$e->getFile().':'.$e->getLine(),
+                'detail' => $e->getMessage(),
+                'reason' => 'No reason',
+            ]));
+        }
 
         $this->em->persist($job);
         $this->em->flush();
