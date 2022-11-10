@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import { Modal } from 'bootstrap';
+import Modal from 'bootstrap/js/dist/modal'
 import axios from "axios";
 
 export default class extends Controller {
