@@ -10,6 +10,7 @@ use App\Message\NewRotaFileNotification;
 use App\SheetParsers\SheetParsers;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
+use Exception;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -36,7 +37,7 @@ class ProcessNewRotaFile {
         $this->em->persist($job);
         $this->em->flush();
 
-        try {
+//        try {
             $placement = $job->getPlacement();
             $parser = $this->parsers->getParser($placement->getProcessor());
             if (is_null($parser)) {
@@ -55,6 +56,9 @@ class ProcessNewRotaFile {
             } else {
                 $out = $this->handleCaldav($calendar, $placement, $shifts);
             }
+            try {
+                unlink($job->getFilename());
+            } catch (Exception $e) {}
 
             $result = json_decode($out, associative: true);
 
@@ -64,16 +68,14 @@ class ProcessNewRotaFile {
                 $job->markSuccess($out);
             }
 
-        } catch (Throwable $e) {
-            $job->markFailed(json_encode([
-                'type' => $e::class,
-                'where' => 'PHP',
-                'detail' => $e->getMessage(),
-                'reason' => 'No reason',
-            ]));
-        }
-
-        unlink($job->getFilename());
+//        } catch (Throwable $e) {
+//            $job->markFailed(json_encode([
+//                'type' => $e::class,
+//                'where' => 'PHP - '.$e->getFile().':'.$e->getLine(),
+//                'detail' => $e->getMessage(),
+//                'reason' => 'No reason',
+//            ]));
+//        }
 
         $this->em->persist($job);
         $this->em->flush();
