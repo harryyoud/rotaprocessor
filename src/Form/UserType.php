@@ -29,11 +29,11 @@ class UserType extends AbstractType {
             ])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'help' => "Password for CalDAV calendar. Leave blank to keep unchanged",
                 'mapped' => false,
                 'required' => $options['new_user'],
                 'first_options' => [
                     'label' => 'Password',
+                    'help' => $options['new_user'] ? '' : 'Leave blank to leave unchanged',
                 ],
                 'second_options' => [
                     'label' => 'Repeat password',
