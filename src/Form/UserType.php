@@ -40,7 +40,6 @@ class UserType extends AbstractType {
                 ],
             ])
             ->add('admin', CheckboxType::class, [
-                'mapped' => false,
                 'required' => false,
                 'getter' => fn(User $user, FormInterface $form) => $user->isAdmin(),
                 'setter' => function (User &$user, bool $admin, FormInterface $form) {
