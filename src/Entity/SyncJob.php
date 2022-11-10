@@ -28,6 +28,9 @@ class SyncJob {
     #[ORM\Column(length: 255)]
     private string $filename = "";
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'jobs')]
+    private ?User $owner = null;
+
     public function __construct(Placement $placement, string $filename) {
         $this->placement = $placement;
         $this->filename = $filename;
@@ -90,6 +93,12 @@ class SyncJob {
             static::STATUS_SUCCESS => 'Success',
             static::STATUS_FAILED => 'Failed',
         };
+    }
+    /**
+     * @return User|null
+     */
+    public function getOwner(): ?User {
+        return $this->owner;
     }
 
 }

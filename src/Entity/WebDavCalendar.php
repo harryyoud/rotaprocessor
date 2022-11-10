@@ -31,6 +31,9 @@ class WebDavCalendar {
     #[ORM\OneToMany(mappedBy: 'calendar', targetEntity: Placement::class)]
     protected ?Collection $placements = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'calendars')]
+    private ?User $owner = null;
+
     public function __construct() {
         $this->placements = new ArrayCollection();
     }
@@ -100,4 +103,11 @@ class WebDavCalendar {
 
         return $this;
     }
+    /**
+     * @return User|null
+     */
+    public function getOwner(): ?User {
+        return $this->owner;
+    }
+
 }

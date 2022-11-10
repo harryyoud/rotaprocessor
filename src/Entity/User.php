@@ -3,11 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Entity]
 class User implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -25,6 +27,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: SyncJob::class)]
+    private ?Collection $jobs = null;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Placement::class)]
+    private ?Collection $placements = null;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: WebDavCalendar::class)]
+    private ?Collection $calendars = null;
+
+    public function __construct() {
+        $this->jobs = new ArrayCollection();
+        $this->placements = new ArrayCollection();
+        $this->calendars = new ArrayCollection();
+    }
 
     public function getId(): ?int {
         return $this->id;
@@ -79,5 +96,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         $this->name = $name;
 
         return $this;
+    }
+
+    /**
+     * @return SyncJob[]
+     */
+    public function getJobs(): array {
+        return $this->jobs->toArray();
+    }
+
+    /**
+     * @return Placement[]
+     */
+    public function getPlacements(): array {
+        return $this->placements->toArray();
+    }
+
+    /**
+     * @return WebDavCalendar[]
+     */
+    public function getCalendars(): array {
+        return $this->calendars->toArray();
     }
 }

@@ -13,11 +13,18 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if showNav is not defined or showNav %}
                 {{ _self.menuItem("Home", 'landing') }}
                 {{ _self.menuItem("Placements", 'list_placements') }}
                 {{ _self.menuItem("WebDAV Calendars", 'list_calendars') }}
                 {{ _self.menuItem("Jobs", 'list_jobs') }}
+                {% endif %}
             </ul>
+            {% if app.user %}
+                Logged in as {{ app.user.name }}
+            {% else %}
+                <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+            {% endif %}
         </div>
     </div>
 </nav>

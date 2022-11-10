@@ -40,6 +40,9 @@ class Placement {
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $shifts = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'placements')]
+    private ?User $owner = null;
+
     public function __construct() {
         $this->jobs = new ArrayCollection();
     }
@@ -153,5 +156,12 @@ class Placement {
      */
     public function setShifts(?string $shifts): void {
         $this->shifts = $shifts;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getOwner(): ?User {
+        return $this->owner;
     }
 }
