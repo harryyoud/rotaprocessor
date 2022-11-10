@@ -31,7 +31,7 @@ class Placement {
     #[ORM\Column(length: 255)]
     private ?string $sheetName = null;
 
-    #[ORM\ManyToOne(targetEntity: WebDavCalendar::class)]
+    #[ORM\ManyToOne(targetEntity: WebDavCalendar::class, inversedBy: 'placements')]
     private ?WebDavCalendar $calendar = null;
 
     #[ORM\OneToMany(mappedBy: 'placement', targetEntity: SyncJob::class)]
