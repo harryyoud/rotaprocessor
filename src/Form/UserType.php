@@ -21,13 +21,17 @@ class UserType extends AbstractType {
 
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
-            ->add('name', TextType::class)
+            ->add('name', TextType::class, [
+                'attr' => ['autocomplete' => 'off',],
+            ])
             ->add('email', TextType::class, [
+                'attr' => ['autocomplete' => 'off',],
                 'constraints' => [
                     new Email(),
                 ]
             ])
             ->add('password', RepeatedType::class, [
+                'attr' => ['autocomplete' => 'off',],
                 'type' => PasswordType::class,
                 'mapped' => false,
                 'required' => $options['new_user'],
@@ -40,6 +44,7 @@ class UserType extends AbstractType {
                 ],
             ])
             ->add('admin', CheckboxType::class, [
+                'attr' => ['autocomplete' => 'off',],
                 'required' => false,
                 'getter' => fn(User $user, FormInterface $form) => $user->isAdmin(),
                 'setter' => function (User &$user, bool $admin, FormInterface $form) {
