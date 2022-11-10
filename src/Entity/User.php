@@ -118,4 +118,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     public function getCalendars(): array {
         return $this->calendars->toArray();
     }
+
+    public function isAdmin(): bool {
+        return in_array("ROLE_ADMIN", $this->getRoles());
+    }
 }

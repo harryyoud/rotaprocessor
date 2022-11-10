@@ -164,4 +164,11 @@ class Placement {
     public function getOwner(): ?User {
         return $this->owner;
     }
+
+    /**
+     * @param User|null $owner
+     */
+    public function setOwner(?User $owner): void {
+        $this->owner = $owner;
+    }
 }

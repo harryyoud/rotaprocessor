@@ -25,6 +25,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
+use function Doctrine\ORM\QueryBuilder;
 
 #[Route('/my')]
 #[IsGranted('ROLE_USER')]
@@ -68,6 +69,7 @@ class MainController extends AbstractController {
             if ($prevCalendar === null && $placement->getCalendar() !== null) {
                 $placement->setShifts(null);
             }
+            $placement->setOwner($this->getUser());
             $this->em->persist($placement);
             $this->em->flush();
             if ($isNew) {
@@ -116,10 +118,12 @@ class MainController extends AbstractController {
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var WebDavCalendar $calendar */
             $calendar = $form->getData();
             if (!is_null($form->get('password')->getData()) && !empty($form->get('password')->getData())) {
                 $calendar->setPassword($form['password']->getData());
             }
+            $calendar->setOwner($this->getUser());
             $this->em->persist($calendar);
             $this->em->flush();
             if ($isNew) {
@@ -141,7 +145,7 @@ class MainController extends AbstractController {
 
     #[Route('/jobs', name: 'list_jobs')]
     public function listJobs(): Response {
-        $jobs = $this->em->getRepository(SyncJob::class)->findAll();
+        $jobs = $this->getUser()->getJobs();
         $parsers = $this->parsers->getParsers();
         return $this->render('jobs.html.twig', [
             'jobs' => array_reverse($jobs),
@@ -151,17 +155,23 @@ class MainController extends AbstractController {
 
     #[Route('/jobs/pending', name: 'list_pending_jobs')]
     public function listIncompleteJobs(): Response {
-        $jobs = $this->em->createQueryBuilder()
+        $qb = $this->em->createQueryBuilder();
+        $qb = $qb
             ->select('j')
             ->from('App:SyncJob', 'j')
-            ->where('j.status = ?', SyncJob::STATUS_CREATED)
-            ->orWhere('j.status = ?', SyncJob::STATUS_PENDING)
-            ->getQuery()
-            ->execute();
+            ->where($qb->expr()->andX(
+                $qb->expr()->orX(
+                    $qb->expr()->eq('j.status', SyncJob::STATUS_PENDING),
+                    $qb->expr()->eq('j.status', SyncJob::STATUS_CREATED),
+                ),
+                $qb->expr()->eq('j.owner', $this->getUser()),
+            ))
+        ;
+        $jobs = $qb->getQuery()->execute();
         ;
         $parsers = $this->parsers->getParsers();
         return $this->render('jobs.html.twig', [
-            'jobs' => $jobs,
+            'jobs' => array_reverse($jobs),
             'parsers' => $parsers,
         ]);
     }
@@ -186,6 +196,7 @@ class MainController extends AbstractController {
             $file->move($folder, $filename);
 
             $job = new SyncJob($placement, $filename);
+            $job->setOwner($this->getUser());
             $this->em->persist($job);
             $this->em->flush();
             $this->bus->dispatch(new NewRotaFileNotification($job->getId()));

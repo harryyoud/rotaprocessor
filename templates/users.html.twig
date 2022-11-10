@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Users{% endblock %}
+
+{% block body %}
+<h3 class="page-title">Users</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Placements</th>
+            <th>Calendars</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>
+                {{ user.name }}
+                {% if user.admin %}
+                    <i title="User has admin privileges" class="bi bi-shield-fill-check admin-shield"></i>
+                {% endif %}
+            </td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.placements | length }}</td>
+            <td>{{ user.calendars | length }}</td>
+            <td>
+                <a href="{{ path('edit_user', {id: user.id}) }}">Edit</a>
+                | <a href="{{ path('delete_user', {id: user.id}) }}">Delete</a>
+                | <a href="{{ path('landing', {'_switch_user': user.email}) }}">Impersonate</a>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="20">
+                <a href="{{ path('new_user') }}" class="btn btn-secondary" style="width: 100%;">+ New User</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
+

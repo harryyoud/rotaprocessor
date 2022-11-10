@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Delete user{% endblock %}
+
+{% block body %}
+<h3 class="page-title">Delete user {{ user.email }}?</h3>
+<small>This will irretrievably delete all data created by this user</small>
+{{ form(form) }}
+{% endblock %}
+

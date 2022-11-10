@@ -22,6 +22,7 @@ security:
             remember_me:
                 secret: '%kernel.secret%' # required
                 lifetime: 604800 # 1 week in seconds
+            switch_user: { role: ROLE_ADMIN }
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
