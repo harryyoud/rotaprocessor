@@ -11,7 +11,7 @@ class IcalController extends AbstractController {
     #[Route('/placement/{id}/ical', name: 'ical_placement')]
     public function getIcal(Placement $placement): Response {
         if (!is_null($placement->getCalendar())) {
-            $this->createNotFoundException("Placement has a WebDav calendar");
+            throw $this->createNotFoundException("Placement has a WebDav calendar");
         }
 
         $shifts = json_decode($placement->getShifts());
