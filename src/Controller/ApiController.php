@@ -29,16 +29,4 @@ class ApiController extends AbstractController {
         }
         return new JsonResponse($text, json: true);
     }
-
-    private function entityToJson($entities): JsonResponse {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new DateTimeNormalizer(), new GetSetMethodNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-        $dataJson = $serializer->serialize($entities, 'json');
-
-        $response = new JsonResponse($dataJson, json: true);
-        $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
-        return $response;
-    }
-
 }
