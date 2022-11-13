@@ -182,7 +182,7 @@ class MainController extends AbstractController {
         $qb = $this->em->createQueryBuilder();
         $qb = $qb
             ->select('j')
-            ->from('App:SyncJob', 'j')
+            ->from(SyncJob::class, 'j')
             ->where($qb->expr()->andX(
                 $qb->expr()->orX(
                     $qb->expr()->eq('j.status', SyncJob::STATUS_PENDING),
