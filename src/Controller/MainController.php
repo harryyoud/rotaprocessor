@@ -94,7 +94,7 @@ class MainController extends AbstractController {
             ->from(SyncJob::class, 'j')
             ->where('j.placement = :placement')
             ->setParameter('placement', $placement)
-            ->orderBy('j.createdAt', 'ASC')
+            ->orderBy('j.createdAt', 'DESC')
         ;
         $parsers = $this->parsers->getParsers();
         $pagination = $this->paginator->paginate(
@@ -163,7 +163,7 @@ class MainController extends AbstractController {
             ->from(SyncJob::class, 'j')
             ->where('j.owner = :owner')
             ->setParameter('owner', $this->getUser())
-            ->orderBy('j.createdAt', 'ASC')
+            ->orderBy('j.createdAt', 'DESC')
         ;
         $parsers = $this->parsers->getParsers();
         $pagination = $this->paginator->paginate(
