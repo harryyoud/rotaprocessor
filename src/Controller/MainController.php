@@ -242,6 +242,9 @@ class MainController extends AbstractController {
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->em->remove($placement);
+            foreach ($placement->getJobs() as $job) {
+                $this->em->remove($job);
+            }
             $this->em->flush();
             $this->addFlash("success", "Placement deleted successfully");
             return $this->redirectToRoute('list_placements');
