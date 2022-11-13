@@ -56,6 +56,7 @@ class LincolnMedicine extends AbstractSheetParser {
             'SDT' => ['SDT', new DateTimeImmutable('09:00:00'), new DateInterval('PT8H')],
             'TWFY1' => ['MEAU twilight', new DateTimeImmutable('16:00:00'), new DateInterval('PT8H')],
             'DFY1' => ['MEAU long day', new DateTimeImmutable('09:00:00'), new DateInterval('PT12H30M')],
+            'AL' => ['Annual leave', new DateTimeImmutable('09:00:00'), new DateInterval('PT8H')],
         };
     }
 }

@@ -87,11 +87,6 @@ class LincolnEmergency extends AbstractSheetParser {
                 if (preg_match($regex, $shiftData['shiftCell']->getValue(), $matches) === 1) {
                     $startDate->setTime($matches[1], $matches[2]);
                     $endDate->setTime($matches[3], $matches[4]);
-                    printf("%s - %s - %s\n",
-                        $startDate->format('Y-m-d H:i'),
-                        $shiftData['shiftCell']->getValue(),
-                        Date::excelToDateTimeObject($shiftData['dateCell']->getValue())->format('Y-m-d'),
-                    );
                 }
             }
 
