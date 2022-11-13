@@ -29,7 +29,9 @@
             <td>
                 <a href="{{ path('edit_user', {id: user.id}) }}">Edit</a>
                 | <a href="{{ path('delete_user', {id: user.id}) }}">Delete</a>
+                {% if app.user.id != user.id %}
                 | <a href="{{ path('landing', {'_switch_user': user.email}) }}">Impersonate</a>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
