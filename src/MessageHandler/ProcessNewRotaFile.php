@@ -57,7 +57,7 @@ class ProcessNewRotaFile {
                 $out = $this->handleCaldav($calendar, $placement, $shifts);
             }
             try {
-                unlink($job->getFilename());
+                unlink($this->kernel->getProjectDir() . "/var/upload/" . $job->getFilename());
             } catch (Exception $e) {}
 
             $result = json_decode($out, associative: true);
