@@ -5,6 +5,7 @@ namespace App\Entity;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
@@ -15,9 +16,10 @@ class SyncJob {
     const STATUS_SUCCESS = 3;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id = null;
 
     #[ORM\Column]
     private ?int $status = null;
@@ -58,9 +60,9 @@ class SyncJob {
     }
 
     /**
-     * @return int|null
+     * @return Uuid|null
      */
-    public function getId(): ?int {
+    public function getId(): ?Uuid {
         return $this->id;
     }
 
