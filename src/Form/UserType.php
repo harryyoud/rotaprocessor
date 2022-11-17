@@ -15,8 +15,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 
 class UserType extends AbstractType {
-    public function __construct(
-    ) {}
+    public function __construct() {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
@@ -58,8 +58,7 @@ class UserType extends AbstractType {
                     }
                 },
             ])
-            ->add('save', SubmitType::class)
-        ;
+            ->add('save', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver) {

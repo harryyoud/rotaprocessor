@@ -31,21 +31,13 @@ use function Doctrine\ORM\QueryBuilder;
 #[IsGranted('ROLE_USER')]
 class MainController extends AbstractController {
     public function __construct(
-        private readonly SheetParsers $parsers,
+        private readonly SheetParsers           $parsers,
         private readonly EntityManagerInterface $em,
-        private readonly KernelInterface $kernel,
-        private readonly MessageBusInterface $bus,
-        private readonly PaginatorInterface $paginator,
-    ) {}
-
-    protected function getUser(): ?User {
-        $user = parent::getUser();
-        if ($user !== null && ! $user instanceof User) {
-            throw new \Exception("Unexpected user type!");
-        }
-        return $user;
+        private readonly KernelInterface        $kernel,
+        private readonly MessageBusInterface    $bus,
+        private readonly PaginatorInterface     $paginator,
+    ) {
     }
-
 
     #[Route('/placements', name: 'list_placements')]
     public function listPlacements(): Response {
@@ -55,6 +47,41 @@ class MainController extends AbstractController {
             'placements' => $placements,
             'parsers' => $parsers,
         ]);
+    }
+
+    protected function getUser(): ?User {
+        $user = parent::getUser();
+        if ($user !== null && !$user instanceof User) {
+            throw new \Exception("Unexpected user type!");
+        }
+        return $user;
+    }
+
+    #[Route('/placement/{id}/jobs', name: 'list_jobs_by_placement')]
+    #[IsGranted(PlacementVoter::VIEW_JOBS, subject: 'placement')]
+    public function listJobsByPlacement(Placement $placement, Request $request): Response {
+        $qb = $this->em->createQueryBuilder()
+            ->select('j')
+            ->from(SyncJob::class, 'j')
+            ->where('j.placement = :placement')
+            ->setParameter('placement', $placement)
+            ->orderBy('j.createdAt', 'DESC');
+        $parsers = $this->parsers->getParsers();
+        $pagination = $this->paginator->paginate(
+            $qb,
+            $request->query->getInt('page', 1),
+            10
+        );
+        return $this->render('jobs.html.twig', [
+            'pagination' => $pagination,
+            'placement' => $placement,
+            'parsers' => $parsers,
+        ]);
+    }
+
+    #[Route('/placement/new', name: 'new_placement')]
+    public function newPlacement(Request $request): Response {
+        return $this->editPlacement(new Placement(), $request);
     }
 
     #[Route('/placement/{id}/edit', name: 'edit_placement')]
@@ -85,40 +112,17 @@ class MainController extends AbstractController {
         ]);
     }
 
-    #[Route('/placement/{id}/jobs', name: 'list_jobs_by_placement')]
-    #[IsGranted(PlacementVoter::VIEW_JOBS, subject: 'placement')]
-    public function listJobsByPlacement(Placement $placement, Request $request): Response {
-        $qb = $this->em->createQueryBuilder()
-            ->select('j')
-            ->from(SyncJob::class, 'j')
-            ->where('j.placement = :placement')
-            ->setParameter('placement', $placement)
-            ->orderBy('j.createdAt', 'DESC')
-        ;
-        $parsers = $this->parsers->getParsers();
-        $pagination = $this->paginator->paginate(
-            $qb,
-            $request->query->getInt('page', 1),
-            10
-        );
-        return $this->render('jobs.html.twig', [
-            'pagination' => $pagination,
-            'placement' => $placement,
-            'parsers' => $parsers,
-        ]);
-    }
-
-    #[Route('/placement/new', name: 'new_placement')]
-    public function newPlacement(Request $request): Response {
-        return $this->editPlacement(new Placement(), $request);
-    }
-
     #[Route('/calendars', name: 'list_calendars')]
     public function listCalendars(): Response {
         $calendars = $this->getUser()->getCalendars();
         return $this->render('calendars.html.twig', [
             'calendars' => $calendars,
         ]);
+    }
+
+    #[Route('/calendar/new', name: 'new_calendar')]
+    public function newCalendar(Request $request): Response {
+        return $this->editCalendar(new WebDavCalendar(), $request);
     }
 
     #[Route('/calendar/{id}/edit', name: 'edit_calendar')]
@@ -150,11 +154,6 @@ class MainController extends AbstractController {
         ]);
     }
 
-    #[Route('/calendar/new', name: 'new_calendar')]
-    public function newCalendar(Request $request): Response {
-        return $this->editCalendar(new WebDavCalendar(), $request);
-    }
-
     #[Route('/jobs', name: 'list_jobs')]
     public function listJobs(Request $request): Response {
         $qb = $this->em->createQueryBuilder()
@@ -162,8 +161,7 @@ class MainController extends AbstractController {
             ->from(SyncJob::class, 'j')
             ->where('j.owner = :owner')
             ->setParameter('owner', $this->getUser())
-            ->orderBy('j.createdAt', 'DESC')
-        ;
+            ->orderBy('j.createdAt', 'DESC');
         $parsers = $this->parsers->getParsers();
         $pagination = $this->paginator->paginate(
             $qb,
@@ -188,10 +186,8 @@ class MainController extends AbstractController {
                     $qb->expr()->eq('j.status', SyncJob::STATUS_CREATED),
                 ),
                 $qb->expr()->eq('j.owner', $this->getUser()),
-            ))
-        ;
-        $jobs = $qb->getQuery()->execute();
-        ;
+            ));
+        $jobs = $qb->getQuery()->execute();;
         $parsers = $this->parsers->getParsers();
         return $this->render('jobs.html.twig', [
             'jobs' => array_reverse($jobs),
@@ -215,7 +211,7 @@ class MainController extends AbstractController {
                 $extension = 'bin';
             }
             $folder = $this->kernel->getProjectDir() . '/var/upload/';
-            $filename = Uuid::v4()->toRfc4122() .'.'.$extension;
+            $filename = Uuid::v4()->toRfc4122() . '.' . $extension;
             $file->move($folder, $filename);
 
             $job = new SyncJob($placement, $filename);

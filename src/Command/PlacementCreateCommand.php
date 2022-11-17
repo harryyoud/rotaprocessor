@@ -32,8 +32,7 @@ class PlacementCreateCommand extends Command {
             ->addArgument('prefix', InputArgument::REQUIRED, 'Prefix')
             ->addArgument('nameFilter', InputArgument::REQUIRED, 'Name filter')
             ->addArgument('sheetName', InputArgument::REQUIRED, 'Sheet name')
-            ->addArgument('calendarId', InputArgument::REQUIRED, 'Calendar ID')
-        ;
+            ->addArgument('calendarId', InputArgument::REQUIRED, 'Calendar ID');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {

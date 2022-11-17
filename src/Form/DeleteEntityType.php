@@ -9,7 +9,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 class DeleteEntityType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
-            ->add('delete', SubmitType::class)
-        ;
+            ->add('delete', SubmitType::class);
     }
 }

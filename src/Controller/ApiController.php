@@ -12,7 +12,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api')]
 class ApiController extends AbstractController {
-    public function __construct() {}
+    public function __construct() {
+    }
 
     #[Route('/job/{id}/log', name: 'get_job_log_json')]
     #[IsGranted(SyncJobVoter::VIEW_LOGS, subject: 'job')]

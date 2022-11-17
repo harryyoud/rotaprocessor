@@ -15,9 +15,10 @@ use Symfony\Component\Routing\Annotation\Route;
 #[IsGranted('ROLE_USER')]
 class ProfileController extends AbstractController {
     public function __construct(
-        private readonly EntityManagerInterface $em,
+        private readonly EntityManagerInterface      $em,
         private readonly UserPasswordHasherInterface $passwordHasher,
-    ) {}
+    ) {
+    }
 
     #[Route('/profile', name: 'profile')]
     public function profile(Request $request): Response {

@@ -11,8 +11,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class WebDavCalendarType extends AbstractType {
-    public function __construct(
-    ) {}
+    public function __construct() {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
@@ -32,8 +32,7 @@ class WebDavCalendarType extends AbstractType {
                 'help' => "Colour used for events on the calendar",
                 'label' => "Colour",
             ])
-            ->add('save', SubmitType::class)
-        ;
+            ->add('save', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver) {

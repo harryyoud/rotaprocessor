@@ -15,13 +15,14 @@ use Symfony\Component\Form\FormBuilderInterface;
 class PlacementType extends AbstractType {
     public function __construct(
         private readonly SheetParsers $parsers
-    ) {}
+    ) {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
             ->add('name', TextType::class)
             ->add('processor', ChoiceType::class, [
-                'choices' => array_flip(array_map(function(SheetParser $parser) {
+                'choices' => array_flip(array_map(function (SheetParser $parser) {
                     return $parser::getParserName();
                 }, $this->parsers->getParsers())),
             ])
@@ -44,7 +45,6 @@ class PlacementType extends AbstractType {
             ->add('sheetName', TextType::class, [
                 'help' => "Name of the sheet of the Excel file",
             ])
-            ->add('save', SubmitType::class)
-        ;
+            ->add('save', SubmitType::class);
     }
 }

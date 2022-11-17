@@ -10,30 +10,23 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 class WebDavCalendar {
+    #[ORM\OneToMany(mappedBy: 'calendar', targetEntity: Placement::class)]
+    protected ?Collection $placements = null;
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private ?Uuid $id = null;
-
     #[ORM\Column(length: 255)]
     private ?string $name = null;
-
     #[ORM\Column(length: 255)]
     private ?string $color = null;
-
     #[ORM\Column(length: 255)]
     private ?string $url = null;
-
     #[ORM\Column(length: 255)]
     private ?string $username = null;
-
     #[ORM\Column(length: 255)]
     private ?string $password = null;
-
-    #[ORM\OneToMany(mappedBy: 'calendar', targetEntity: Placement::class)]
-    protected ?Collection $placements = null;
-
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'calendars')]
     private ?User $owner = null;
 
@@ -106,6 +99,7 @@ class WebDavCalendar {
 
         return $this;
     }
+
     /**
      * @return User|null
      */

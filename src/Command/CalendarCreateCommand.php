@@ -29,8 +29,7 @@ class CalendarCreateCommand extends Command {
             ->addArgument('url', InputArgument::REQUIRED, 'URL')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
             ->addArgument('password', InputArgument::REQUIRED, 'Password')
-            ->addArgument('color', InputArgument::REQUIRED, 'Color')
-        ;
+            ->addArgument('color', InputArgument::REQUIRED, 'Color');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int {

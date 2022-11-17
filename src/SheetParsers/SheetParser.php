@@ -6,6 +6,10 @@ use App\Types\Shift;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 interface SheetParser {
+    public static function getParserName(): string;
+
+    public static function getParserSlug(): string;
+
     /**
      * Returns parsed shifts from worksheet
      * @return Shift[]
@@ -20,6 +24,4 @@ interface SheetParser {
     public function setNameFilter(string $regex): void;
 
     public function setSheet(Worksheet $sheet): void;
-    public static function getParserName(): string;
-    public static function getParserSlug(): string;
 }

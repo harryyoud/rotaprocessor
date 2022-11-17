@@ -25,10 +25,11 @@ use Throwable;
 #[AsMessageHandler]
 class ProcessNewRotaFile {
     public function __construct(
-        private readonly SheetParsers $parsers,
+        private readonly SheetParsers           $parsers,
         private readonly EntityManagerInterface $em,
-        private readonly KernelInterface $kernel,
-    ) {}
+        private readonly KernelInterface        $kernel,
+    ) {
+    }
 
     public function __invoke(NewRotaFileNotification $message): void {
         $job = $this->em->find(SyncJob::class, $message->getJobId());
@@ -57,7 +58,8 @@ class ProcessNewRotaFile {
             }
             try {
                 unlink($this->kernel->getProjectDir() . "/var/upload/" . $job->getFilename());
-            } catch (Exception $e) {}
+            } catch (Exception $e) {
+            }
 
             $result = json_decode($out, associative: true);
 
@@ -70,7 +72,7 @@ class ProcessNewRotaFile {
         } catch (Throwable $e) {
             $job->markFailed(json_encode([
                 'type' => $e::class,
-                'where' => 'PHP - '.$e->getFile().':'.$e->getLine(),
+                'where' => 'PHP - ' . $e->getFile() . ':' . $e->getLine(),
                 'detail' => $e->getMessage(),
                 'reason' => 'No reason',
             ]));
@@ -78,6 +80,13 @@ class ProcessNewRotaFile {
 
         $this->em->persist($job);
         $this->em->flush();
+    }
+
+    private function loadSheet(string $fileName, string $sheetName): Worksheet {
+        $reader = new Xlsx();
+        $reader->setLoadSheetsOnly($sheetName);
+        $workbook = $reader->load($fileName);
+        return $workbook->getActiveSheet();
     }
 
     private function handleIcal(Placement $placement, $shifts) {
@@ -88,7 +97,7 @@ class ProcessNewRotaFile {
         $placement->setShifts($dataJson);
         $this->em->persist($placement);
         $this->em->flush();
-        return json_encode(['message' => 'Updated iCal with '.count($shifts).' shifts']);
+        return json_encode(['message' => 'Updated iCal with ' . count($shifts) . ' shifts']);
     }
 
     private function handleCaldav(WebDavCalendar $calendar, Placement $placement, $shifts) {
@@ -114,12 +123,5 @@ class ProcessNewRotaFile {
         $process->mustRun();
         $process->wait();
         return $process->getOutput();
-    }
-
-    private function loadSheet(string $fileName, string $sheetName): Worksheet {
-        $reader = new Xlsx();
-        $reader->setLoadSheetsOnly($sheetName);
-        $workbook = $reader->load($fileName);
-        return $workbook->getActiveSheet();
     }
 }

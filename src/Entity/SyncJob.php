@@ -12,7 +12,7 @@ use Symfony\Component\Uid\Uuid;
 class SyncJob {
     const STATUS_CREATED = 0;
     const STATUS_PENDING = 1;
-    const STATUS_FAILED  = 2;
+    const STATUS_FAILED = 2;
     const STATUS_SUCCESS = 3;
 
     #[ORM\Id]
@@ -95,13 +95,14 @@ class SyncJob {
     }
 
     public function getStatusAsString(): string {
-        return match($this->status) {
+        return match ($this->status) {
             static::STATUS_CREATED => 'Awaiting processing',
             static::STATUS_PENDING => 'Processing',
             static::STATUS_SUCCESS => 'Success',
             static::STATUS_FAILED => 'Failed',
         };
     }
+
     /**
      * @return User|null
      */

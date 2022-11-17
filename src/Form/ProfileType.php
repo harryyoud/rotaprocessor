@@ -12,8 +12,8 @@ use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints\Email;
 
 class ProfileType extends AbstractType {
-    public function __construct(
-    ) {}
+    public function __construct() {
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
@@ -59,7 +59,6 @@ class ProfileType extends AbstractType {
                     ],
                 ],
             ])
-            ->add('save', SubmitType::class)
-        ;
+            ->add('save', SubmitType::class);
     }
 }

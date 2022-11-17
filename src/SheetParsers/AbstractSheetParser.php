@@ -6,15 +6,11 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 abstract class AbstractSheetParser implements SheetParser {
-    protected Worksheet $sheet;
-    protected string $nameFilter;
     protected static string $parserName;
     protected static string $parserSlug;
     protected static string $sheetName;
-
-    public final function setSheet(Worksheet $sheet): void {
-        $this->sheet = $sheet;
-    }
+    protected Worksheet $sheet;
+    protected string $nameFilter;
 
     public static function getParserName(): string {
         return static::$parserName;
@@ -79,6 +75,10 @@ abstract class AbstractSheetParser implements SheetParser {
         }
 
         return $foundCell;
+    }
+
+    public final function setSheet(Worksheet $sheet): void {
+        $this->sheet = $sheet;
     }
 
     public function setNameFilter(string $regex): void {
