@@ -21,7 +21,6 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Throwable;
-use UnexpectedValueException;
 
 #[AsMessageHandler]
 class ProcessNewRotaFile {
