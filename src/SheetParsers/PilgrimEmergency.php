@@ -59,7 +59,7 @@ class PilgrimEmergency extends AbstractSheetParser {
         if (str_contains($cellValue, "start at")) {
             $sdtStart = $startDate->setTime($matches[1], $matches[2]);
             $sdtEnd = $startDate->setTime($matches[6], $matches[7]);
-            $shiftStart->setTime($matches[6], $matches[7]);
+            $shiftStart = $shiftStart->setTime($matches[6], $matches[7]);
             return [
                 ["SDT", $sdtStart, $sdtEnd],
                 ["In", $shiftStart, $shiftEnd],
