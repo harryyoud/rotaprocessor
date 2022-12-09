@@ -60,7 +60,7 @@ class PilgrimEmergency extends AbstractSheetParser {
             $sdtStart = clone $startDate;
             $sdtStart->setTime($matches[1], $matches[2]);
             $sdtEnd = clone $startDate;
-            $sdtStart->setTime($matches[6], $matches[7]);
+            $sdtEnd->setTime($matches[6], $matches[7]);
             $shiftStart->setTime($matches[6], $matches[7]);
             return [
                 ["SDT", $sdtStart, $sdtEnd],
