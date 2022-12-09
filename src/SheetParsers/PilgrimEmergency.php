@@ -39,7 +39,7 @@ class PilgrimEmergency extends AbstractSheetParser {
     }
 
     private function getShiftTimes(string $cellValue, \DateTime $startDate): array {
-        $regex = '(\d\d)(\d\d)-(\d\d)(\d\d)(\sstart at (\d\d)(\d\d)\))?';
+        $regex = '/(\d\d)(\d\d)-(\d\d)(\d\d)(\sstart at (\d\d)(\d\d)\))?/';
         if (str_contains($cellValue, "off")) {
             return [["Off", null, null]];
         }
