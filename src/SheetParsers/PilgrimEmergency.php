@@ -45,7 +45,7 @@ class PilgrimEmergency extends AbstractSheetParser {
         }
 
         if (str_contains($cellValue, "AL")) {
-            return [["Annual Leave", null, null]];
+            return [["Annual Leave", (clone $startDate)->setTime(9, 00), (clone $startDate)->setTime(17, 30)]];
         }
 
         $matches = [];
