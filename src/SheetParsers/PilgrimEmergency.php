@@ -44,6 +44,10 @@ class PilgrimEmergency extends AbstractSheetParser {
             return [["Off", null, null]];
         }
 
+        if (str_contains($cellValue, "AL")) {
+            return [["Annual Leave", null, null]];
+        }
+
         $matches = [];
         preg_match($regex, $cellValue, $matches);
 
