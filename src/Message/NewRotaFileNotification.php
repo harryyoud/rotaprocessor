@@ -2,14 +2,16 @@
 
 namespace App\Message;
 
-class NewRotaFileNotification {
-    private int $jobId;
+use Symfony\Component\Uid\Uuid;
 
-    public function __construct(int $jobId) {
+class NewRotaFileNotification {
+    private Uuid $jobId;
+
+    public function __construct(Uuid $jobId) {
         $this->jobId = $jobId;
     }
 
-    public function getJobId(): int {
+    public function getJobId(): Uuid {
         return $this->jobId;
     }
 }
