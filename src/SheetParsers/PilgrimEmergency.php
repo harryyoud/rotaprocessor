@@ -39,28 +39,26 @@ class PilgrimEmergency extends AbstractSheetParser {
     }
 
     private function getShiftTimes(string $cellValue, \DateTime $startDate): array {
+        $startDate = DateTimeImmutable::createFromMutable($startDate);
+
         $regex = '/(\d\d)(\d\d)-(\d\d)(\d\d)(\sstart at (\d\d)(\d\d)\))?/';
         if (str_contains($cellValue, "off")) {
             return [["Off", null, null]];
         }
 
         if (str_contains($cellValue, "AL")) {
-            return [["Annual Leave", (clone $startDate)->setTime(9, 00), (clone $startDate)->setTime(17, 30)]];
+            return [["Annual Leave", $startDate->setTime(9, 00), $startDate->setTime(17, 30)]];
         }
 
         $matches = [];
         preg_match($regex, $cellValue, $matches);
 
-        $shiftStart = clone $startDate;
-        $shiftStart->setTime($matches[1], $matches[2]);
-        $shiftEnd = clone $startDate;
-        $shiftEnd->setTime($matches[3], $matches[4]);
+        $shiftStart = $startDate->setTime($matches[1], $matches[2]);
+        $shiftEnd = $startDate->setTime($matches[3], $matches[4]);
 
         if (str_contains($cellValue, "start at")) {
-            $sdtStart = clone $startDate;
-            $sdtStart->setTime($matches[1], $matches[2]);
-            $sdtEnd = clone $startDate;
-            $sdtEnd->setTime($matches[6], $matches[7]);
+            $sdtStart = $startDate->setTime($matches[1], $matches[2]);
+            $sdtEnd = $startDate->setTime($matches[6], $matches[7]);
             $shiftStart->setTime($matches[6], $matches[7]);
             return [
                 ["SDT", $sdtStart, $sdtEnd],
