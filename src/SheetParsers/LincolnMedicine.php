@@ -17,7 +17,7 @@ class LincolnMedicine extends AbstractSheetParser {
         $ourRowIdx = $nameCell->getRow();
 
         $shiftCells = $this->getRow($ourRowIdx, 'C');
-        $dateCells = $this->getRow(3, 'C');
+        $dateCells = $this->getRow(2, 'C');
 
         $shifts = [];
 
