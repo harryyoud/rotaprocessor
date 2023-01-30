@@ -36,7 +36,7 @@ abstract class AbstractSheetParser implements SheetParser {
 
         $row = $sheet->getRowIterator(startRow: $rowIdx, endRow: $rowIdx + 1)->current();
         foreach ($row->getCellIterator('A') as $cell) {
-            if ($exactContents === $cell->getFormattedValue()) {
+            if ($exactContents === $cell->getValue()) {
                 $foundCell = $cell;
                 break;
             }
@@ -62,7 +62,7 @@ abstract class AbstractSheetParser implements SheetParser {
 
         foreach ($sheet->getRowIterator(startRow: 1) as $row) {
             foreach ($row->getCellIterator($columnIdx, $columnIdx) as $cell) {
-                if ($exactContents === $cell->getFormattedValue()) {
+                if ($exactContents === $cell->getValue()) {
                     $foundCell = $cell;
                     break 2;
                 }
