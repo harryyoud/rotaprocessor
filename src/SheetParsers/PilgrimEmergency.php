@@ -50,6 +50,14 @@ class PilgrimEmergency extends AbstractSheetParser {
             return [["Annual Leave", $startDate->setTime(9, 00), $startDate->setTime(17, 30)]];
         }
 
+        if (str_contains($cellValue, "Sickness")) {
+            return [["Sick Leave", $startDate->setTime(9, 00), $startDate->setTime(17, 30)]];
+        }
+
+        if (str_contains($cellValue, "Emergency Leave")) {
+            return [["Emergency Leave", $startDate->setTime(9, 00), $startDate->setTime(17, 30)]];
+        }
+
         $matches = [];
         preg_match($regex, $cellValue, $matches);
 
