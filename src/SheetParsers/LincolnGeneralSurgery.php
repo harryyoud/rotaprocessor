@@ -14,7 +14,7 @@ class LincolnGeneralSurgery extends PilgrimGeneralSurgery {
             'SEAU' => ['SEAU', new DateTimeImmutable($startDate->format('Y-m-d'), '08:00:00'), new DateInterval('PT12H30M')],
             'Nights' => ['Nights', new DateTimeImmutable($startDate->format('Y-m-d'), '20:00:00'), new DateInterval('PT12H30M')],
             'Cover' => ['Cover', new DateTimeImmutable($startDate->format('Y-m-d'), '08:00:00'), new DateInterval('PT12H30M')],
-            default => $this->getShiftTimes($cellValue, $startDate),
+            default => parent::getShiftTimes($cellValue, $startDate),
         };
     }
 }
