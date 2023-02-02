@@ -38,7 +38,7 @@ class PilgrimGeneralSurgery extends AbstractSheetParser {
         return $shifts;
     }
 
-    private function getShiftTimes(string $cellValue, \DateTime $startDate): array {
+    protected function getShiftTimes(string $cellValue, \DateTime $startDate): array {
         if ($cellValue === "Cover") {
             if (intval($startDate->format('w')) === 5) {
                 return ['Vascular Cover', new DateTimeImmutable($startDate->format('Y-m-d') . '11:00:00'), new DateInterval('PT9H')];
