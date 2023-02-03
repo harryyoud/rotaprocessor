@@ -64,7 +64,7 @@ class MainController extends AbstractController {
             ->select('j')
             ->from(SyncJob::class, 'j')
             ->where('j.placement = :placement')
-            ->setParameter('placement', $placement)
+            ->setParameter('placement', $placement->getId())
             ->orderBy('j.createdAt', 'DESC');
         $parsers = $this->parsers->getParsers();
         $pagination = $this->paginator->paginate(
@@ -160,7 +160,7 @@ class MainController extends AbstractController {
             ->select('j')
             ->from(SyncJob::class, 'j')
             ->where('j.owner = :owner')
-            ->setParameter('owner', $this->getUser())
+            ->setParameter('owner', $this->getUser()->getId())
             ->orderBy('j.createdAt', 'DESC');
         $parsers = $this->parsers->getParsers();
         $pagination = $this->paginator->paginate(
@@ -185,7 +185,7 @@ class MainController extends AbstractController {
                     $qb->expr()->eq('j.status', SyncJob::STATUS_PENDING),
                     $qb->expr()->eq('j.status', SyncJob::STATUS_CREATED),
                 ),
-                $qb->expr()->eq('j.owner', $this->getUser()),
+                $qb->expr()->eq('j.owner', $this->getUser()->getId()),
             ));
         $jobs = $qb->getQuery()->execute();;
         $parsers = $this->parsers->getParsers();
