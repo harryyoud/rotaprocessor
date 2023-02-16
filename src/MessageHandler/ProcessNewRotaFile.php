@@ -84,9 +84,8 @@ class ProcessNewRotaFile {
 
     private function loadSheet(string $fileName, string $sheetName): Worksheet {
         $reader = new Xlsx();
-        $reader->setLoadSheetsOnly($sheetName);
         $workbook = $reader->load($fileName);
-        return $workbook->getActiveSheet();
+        return $workbook->getSheetByName($sheetName);
     }
 
     private function handleIcal(Placement $placement, $shifts) {
