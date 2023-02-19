@@ -40,7 +40,8 @@ class AdminController extends AbstractController {
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            foreach ([$user->getPlacements(), $user->getCalendars(), $user->getJobs()] as $item) {
+            foreach ([$user->getPlacements(), $user->getCalendars(), $user->getJobs(),
+                         $user->getInvites()] as $item) {
                 $this->em->remove($item);
             }
             $this->em->remove($user);
@@ -133,6 +134,7 @@ class AdminController extends AbstractController {
             /** @var Invite $invite */
             $invite = $form->getData();
             $invite->setCreatedAt(new \DateTimeImmutable());
+            $invite->setOwner($this->getUser());
             $this->em->persist($invite);
             $this->em->flush();
             $this->addFlash("success", "Invite created successfully");

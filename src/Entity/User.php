@@ -40,10 +40,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: WebDavCalendar::class)]
     private ?Collection $calendars = null;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Invite::class)]
+    private ?Collection $invites = null;
+
     public function __construct() {
         $this->jobs = new ArrayCollection();
         $this->placements = new ArrayCollection();
         $this->calendars = new ArrayCollection();
+        $this->invites = new ArrayCollection();
     }
 
     public function getId(): ?Uuid {
@@ -124,5 +128,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         $this->roles = $roles;
 
         return $this;
+    }
+
+    /**
+     * @return Invite[]
+     */
+    public function getInvites(): array {
+        return $this->invites->toArray();
     }
 }

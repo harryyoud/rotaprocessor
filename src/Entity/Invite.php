@@ -18,6 +18,9 @@ class Invite {
     #[ORM\Column(nullable: false)]
     private bool $used = false;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'invites')]
+    private ?User $owner = null;
+
     #[ORM\Column(nullable: true)]
     private ?string $emailUsed = null;
 
@@ -73,6 +76,14 @@ class Invite {
 
     public function setComment(?string $comment): void {
         $this->comment = $comment;
+    }
+
+    public function getOwner(): ?User {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): void {
+        $this->owner = $owner;
     }
 
 
