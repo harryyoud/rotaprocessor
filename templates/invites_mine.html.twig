@@ -27,7 +27,7 @@
                 </td>
             </tr>
         {% endfor %}
-        {% if app.user.maxInvites == 0 %}
+        {% if app.user.maxInvites != 0 %}
             <tr>
                 <td colspan="20">
                     <a href="{{ path('new_invite') }}" class="btn btn-secondary" style="width: 100%;">+ New Invite Link</a>
