@@ -35,6 +35,10 @@ class SecurityController extends AbstractController {
 
     #[Route('/signup/invite/{id}', name: 'signup_with_invite')]
     public function signupWithInvite(Invite $invite, Request $request): Response {
+        if ($invite->isUsed()) {
+            return $this->render('invite_expired.html.twig');
+        }
+
         $form = $this->createForm(SignupType::class, new User());
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
