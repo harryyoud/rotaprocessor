@@ -2,14 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\Invite;
 use App\Entity\User;
 use App\Form\DeleteEntityType;
+use App\Form\InviteType;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -86,4 +89,48 @@ class AdminController extends AbstractController {
         ]);
     }
 
+    #[Route('/invites', name: 'list_invites')]
+    public function getInviteLinks(Request $request): Response {
+        $invites = $this->em->getRepository(Invite::class)->findAll();
+        return $this->render('invites.html.twig', [
+            'invites' => $invites,
+        ]);
+    }
+
+    #[Route('/invite/{id}/revoke', name: 'revoke_invite')]
+    public function revokeInvite(Invite $invite, Request $request): Response {
+        $form = $this->createForm(DeleteEntityType::class, []);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $invite->setUsed(true);
+            $invite->setEmailUsed("-revoked-");
+            $invite->setUsedAt(new \DateTimeImmutable());
+            $this->em->persist($invite);
+            $this->em->flush();
+            $this->addFlash("success", "Invite revoked successfully");
+            return $this->redirectToRoute('list_invites');
+        }
+        return $this->renderForm('invite_revoke.html.twig', [
+            'invite' => $invite,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/invite/new', name: 'new_invite')]
+    public function newInviteLink(Request $request): Response {
+        $form = $this->createForm(InviteType::class, new Invite());
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Invite $invite */
+            $invite = $form->getData();
+            $invite->setCreatedAt(new \DateTimeImmutable());
+            $this->em->persist($invite);
+            $this->em->flush();
+            $this->addFlash("success", "Invite created successfully");
+            return $this->redirectToRoute('list_invites');
+        }
+        return $this->renderForm('invite_new.html.twig', [
+            'form' => $form
+        ]);
+    }
 }

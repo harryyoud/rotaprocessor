@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Revoke invite{% endblock %}
+
+{% block body %}
+<h3 class="page-title">Revoke invite {{ invite.id }}?</h3>
+<p><small>This invite will no longer be able to used</small></p>
+{{ form(form) }}
+{% endblock %}
+

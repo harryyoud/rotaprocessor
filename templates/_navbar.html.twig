@@ -20,6 +20,7 @@
                     {{ _self.menuItem("Jobs", 'list_jobs') }}
                     {% if app.user.admin %}
                         {{ _self.menuItem("Users", "list_users") }}
+                        {{ _self.menuItem("Invites", "list_invites") }}
                     {% endif %}
                 {% endif %}
             </ul>
