@@ -31,6 +31,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(options: ["default" => 0])]
+    private int $maxInvites = 0;
+
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: SyncJob::class)]
     private ?Collection $jobs = null;
 
@@ -135,5 +138,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
      */
     public function getInvites(): array {
         return $this->invites->toArray();
+    }
+
+    public function getMaxInvites(): int {
+        return $this->maxInvites;
+    }
+
+    public function setMaxInvites(int $maxInvites): void {
+        $this->maxInvites = $maxInvites;
     }
 }

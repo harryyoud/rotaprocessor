@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -41,6 +42,9 @@ class UserType extends AbstractType {
                 'second_options' => [
                     'label' => 'Repeat password',
                 ],
+            ])
+            ->add('maxInvites', IntegerType::class, [
+                'help' => 'Number of invites to create an account this user can create',
             ])
             ->add('admin', CheckboxType::class, [
                 'attr' => ['autocomplete' => 'off',],

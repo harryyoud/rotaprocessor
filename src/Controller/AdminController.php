@@ -125,23 +125,4 @@ class AdminController extends AbstractController {
             'form' => $form,
         ]);
     }
-
-    #[Route('/invite/new', name: 'new_invite')]
-    public function newInviteLink(Request $request): Response {
-        $form = $this->createForm(InviteType::class, new Invite());
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var Invite $invite */
-            $invite = $form->getData();
-            $invite->setCreatedAt(new \DateTimeImmutable());
-            $invite->setOwner($this->getUser());
-            $this->em->persist($invite);
-            $this->em->flush();
-            $this->addFlash("success", "Invite created successfully");
-            return $this->redirectToRoute('list_invites');
-        }
-        return $this->renderForm('invite_new.html.twig', [
-            'form' => $form
-        ]);
-    }
 }

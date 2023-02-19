@@ -1,24 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}All Invites{% endblock %}
+{% block title %}My Invites{% endblock %}
 
 {% block body %}
-    <h3 class="page-title">All Invites</h3>
+    <h3 class="page-title">My Invites</h3>
     <table class="table">
         <thead>
         <tr>
             <th>Date created</th>
-            <th>Owner</th>
             <th>Comment</th>
             <th>Email used</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        {% for invite in pagination %}
+        {% for invite in invites %}
             <tr class="invite-{{ invite.used ? 'expired' : 'valid' }}">
                 <td>{{ invite.createdAt | ago }}</td>
-                <td>{{ invite.owner.name }}</td>
                 <td class="small">{{ invite.comment }}</td>
                 <td>{{ invite.emailUsed }}</td>
                 <td>
@@ -38,6 +36,5 @@
         {% endif %}
         </tbody>
     </table>
-    {{ knp_pagination_render(pagination) }}
 {% endblock %}
 

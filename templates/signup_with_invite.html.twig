@@ -4,7 +4,11 @@
 
 {% block body %}
     <h3 class="page-title">Signup</h3>
-    <p>You've been invited by {{ invite.owner.name }} to create an account. Please fill in the details below.</p>
+    <p>
+        You've been invited by {{ invite.owner.name }} to create an account. Please fill in the details below.
+        <br />
+        <small>Your email address will be visible to server admins and the user that invited you ({{ invite.owner.name }})</small>
+    </p>
     {{ form(form) }}
 {% endblock %}
 
