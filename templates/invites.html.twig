@@ -14,14 +14,14 @@
         </tr>
         </thead>
         <tbody>
-        {% for invite in invites %}
+        {% for invite in pagination %}
             <tr class="invite-{{ invite.used ? 'expired' : 'valid' }}">
                 <td>{{ invite.createdAt | ago }}</td>
                 <td class="small">{{ invite.comment }}</td>
                 <td>{{ invite.emailUsed }}</td>
                 <td>
-                    <a href="{{ path('signup_with_invite', {id: invite.id}) }}">Get link</a>
                     {% if not invite.used %}
+                        <a href="{{ path('signup_with_invite', {id: invite.id}) }}">Get link</a>
                         | <a href="{{ path('revoke_invite', {id: invite.id}) }}">Revoke</a>
                     {% endif %}
                 </td>
@@ -34,5 +34,6 @@
         </tr>
         </tbody>
     </table>
+    {{ knp_pagination_render(pagination) }}
 {% endblock %}
 

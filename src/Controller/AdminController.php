@@ -8,11 +8,11 @@ use App\Form\DeleteEntityType;
 use App\Form\InviteType;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,6 +22,7 @@ class AdminController extends AbstractController {
     public function __construct(
         private readonly EntityManagerInterface      $em,
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly PaginatorInterface          $paginator,
     ) {
     }
 
@@ -91,9 +92,17 @@ class AdminController extends AbstractController {
 
     #[Route('/invites', name: 'list_invites')]
     public function getInviteLinks(Request $request): Response {
-        $invites = $this->em->getRepository(Invite::class)->findAll();
+        $qb = $this->em->createQueryBuilder()
+            ->select('i')
+            ->from(Invite::class, 'i')
+            ->orderBy('i.createdAt', 'DESC');
+        $pagination = $this->paginator->paginate(
+            $qb,
+            $request->query->getInt('page', 1),
+            10
+        );
         return $this->render('invites.html.twig', [
-            'invites' => $invites,
+            'pagination' => $pagination,
         ]);
     }
 
