@@ -51,11 +51,11 @@ class PilgrimGeneralSurgery extends AbstractSheetParser {
         return match ($cellValue) {
             'WARD' => ['Ward', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT8H')],
             'OFF' => ['Off', null, null],
-            'SL' => ['Study leave', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT8H')],
-            'AL' => ['Annual leave', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT8H')],
-            'WRD/SDT' => ['Ward (half-day)', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT4H')],
+            'SL' => ['Study Leave', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT8H')],
+            'AL' => ['Annual Leave', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT8H')],
+            'WRD/SDT' => ['SDT (Ward half-day)', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT4H')],
             'DAYS' => ['Days', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT12H')],
-            'DAYS 8-4' => ['Day helper', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT8H')],
+            'DAYS 8-4' => ['Day Helper', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT8H')],
         };
     }
 }
