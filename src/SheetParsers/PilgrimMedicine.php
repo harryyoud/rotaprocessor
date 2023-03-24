@@ -69,6 +69,7 @@ class PilgrimMedicine extends AbstractSheetParser {
             'D9D9D9' => "Weekend",
             '00B0F0' => "Teaching day",
             '92D050' => "Bank holiday",
+            'FFFF99' => "Prospective Annual Leave",
             'FFFFFF' => null, //Normal day
             'FFFF00' => null,// Annual leave
         };
@@ -85,6 +86,7 @@ class PilgrimMedicine extends AbstractSheetParser {
             'LD2' => ['LD2 (Ward cover)', new DateTimeImmutable($startDate->format('Y-m-d') . '09:00:00'), new \DateInterval('PT12H30M')],
             'Night' => ['Nights (Ward cover)', new DateTimeImmutable($startDate->format('Y-m-d') . '21:00:00'), new \DateInterval('PT12H30M')],
             '' => ['Ward', new DateTimeImmutable($startDate->format('Y-m-d') . '08:30:00'), new \DateInterval('PT8H30M')],
+            'IAC' => ['IAC', new DateTimeImmutable($startDate->format('Y-m-d') . '08:30:00'), new \DateInterval('PT8H30M')],
             'AL' => ['Annual Leave', new DateTimeImmutable($startDate->format('Y-m-d') . '08:30:00'), new \DateInterval('PT8H30M')],
             'SD' => ['SDT', new DateTimeImmutable($startDate->format('Y-m-d') . '08:30:00'), new \DateInterval('PT8H30M')],
             'eDD' => ['EDD Cover', new DateTimeImmutable($startDate->format('Y-m-d') . '09:00:00'), new \DateInterval('PT12H')],
