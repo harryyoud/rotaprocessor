@@ -6,6 +6,7 @@ use App\Types\Shift;
 use DateTimeImmutable;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use UnhandledMatchError;
 
 class PilgrimMedicine extends AbstractSheetParser {
     protected static string $parserName = "Pilgrim - Medicine";
@@ -45,7 +46,11 @@ class PilgrimMedicine extends AbstractSheetParser {
                 continue;
             }
 
-            $dayType = $this->matchColorToDayType($shiftCell->getStyle()->getFill()->getStartColor()->getRGB());
+            try {
+                $dayType = $this->matchColorToDayType($shiftCell->getStyle()->getFill()->getStartColor()->getRGB());
+            } catch (UnhandledMatchError $e) {
+                throw new \Error($e->getMessage() . "at cell " . $shiftColumn . $rowNum);
+            }
             [$shiftName, $shiftStart, $shiftLength] = $this->matchTextToShift($shiftCellValue, $dayType, $startDate);
             if ($shiftName === null) {
                 continue;
@@ -66,7 +71,7 @@ class PilgrimMedicine extends AbstractSheetParser {
     protected function matchColorToDayType(string $rgbColor): ?string {
         return match ($rgbColor) {
             'FFC000' => "Induction",
-            'D9D9D9' => "Weekend",
+            'D9D9D9', 'D8D8D8' => "Weekend",
             '00B0F0' => "Teaching day",
             '92D050' => "Bank holiday",
             'FFFF99' => "Prospective Annual Leave",
