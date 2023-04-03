@@ -46,7 +46,7 @@ class MainController extends AbstractController {
             ->from(Placement::class, 'p')
             ->where('p.owner = :owner')
             ->setParameter('owner', $this->getUser()->getId()->toBinary())
-            ->orderBy('p.name', 'DESC')
+            ->orderBy('p.name', 'ASC')
             ->getQuery()->execute();
         $parsers = $this->parsers->getParsers();
         return $this->render('placements.html.twig', [
