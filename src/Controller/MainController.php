@@ -45,7 +45,7 @@ class MainController extends AbstractController {
             ->select('p')
             ->from(Placement::class, 'p')
             ->where('p.owner = :owner')
-            ->setParameter('owner', $this->getUser())
+            ->setParameter('owner', $this->getUser()->getId()->toBinary())
             ->orderBy('p.name', 'DESC')
             ->getQuery()->execute();
         $parsers = $this->parsers->getParsers();
