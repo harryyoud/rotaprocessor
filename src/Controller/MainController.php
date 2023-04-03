@@ -41,7 +41,13 @@ class MainController extends AbstractController {
 
     #[Route('/placements', name: 'list_placements')]
     public function listPlacements(): Response {
-        $placements = $this->getUser()->getPlacements();
+        $placements = $this->em->createQueryBuilder()
+            ->select('p')
+            ->from(Placement::class, 'p')
+            ->where('p.owner = :owner')
+            ->setParameter('owner', $this->getUser())
+            ->orderBy('p.name', 'DESC')
+            ->getQuery()->execute();
         $parsers = $this->parsers->getParsers();
         return $this->render('placements.html.twig', [
             'placements' => $placements,
