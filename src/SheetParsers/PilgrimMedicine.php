@@ -95,6 +95,7 @@ class PilgrimMedicine extends AbstractSheetParser {
             'IAC' => ['IAC', new DateTimeImmutable($startDate->format('Y-m-d') . '08:30:00'), new \DateInterval('PT8H30M')],
             'AL' => ['Annual Leave', new DateTimeImmutable($startDate->format('Y-m-d') . '08:30:00'), new \DateInterval('PT8H30M')],
             'SD' => ['SDT', new DateTimeImmutable($startDate->format('Y-m-d') . '08:30:00'), new \DateInterval('PT8H30M')],
+            'SL' => ['Study Leave', new DateTimeImmutable($startDate->format('Y-m-d') . '08:30:00'), new \DateInterval('PT8H30M')],
             'eDD' => ['EDD Cover', new DateTimeImmutable($startDate->format('Y-m-d') . '09:00:00'), new \DateInterval('PT12H')],
         };
     }
