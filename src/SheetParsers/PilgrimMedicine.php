@@ -77,6 +77,7 @@ class PilgrimMedicine extends AbstractSheetParser {
             'FFFF99' => "Prospective Annual Leave",
             'FFFFFF' => null, //Normal day
             'FFFF00' => null,// Annual leave
+            'FF66CC' => "Strike",
         };
     }
 
