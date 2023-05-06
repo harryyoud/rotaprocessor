@@ -37,7 +37,7 @@ class PilgrimMedicine extends AbstractSheetParser {
             if ($shiftCellValue === null) {
                 $shiftCellValue = "";
             }
-            if ($shiftCellValue[0] === '=') {
+            if (len($shiftCellValue) >=1 && $shiftCellValue[0] === '=') {
                 $shiftCellValue = $shiftCell->getOldCalculatedValue();
             }
 
