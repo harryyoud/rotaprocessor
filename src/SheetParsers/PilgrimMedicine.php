@@ -42,7 +42,7 @@ class PilgrimMedicine extends AbstractSheetParser {
                 $shiftCellValue = $shiftCell->getOldCalculatedValue();
             }
 
-            if ($shiftCellValue === 'Off') {
+            if ($shiftCellValue === 'Off' || $shiftCellValue === 'OFF') {
                 continue;
             }
 
