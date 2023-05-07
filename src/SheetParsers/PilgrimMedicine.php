@@ -25,7 +25,7 @@ class PilgrimMedicine extends AbstractSheetParser {
 
             /** @var Cell $dateCell */
             $dateCell = $this->sheet->getCell('A'.$rowNum);
-            if ($dateCell->getCalculatedValue() === "") {
+            if ($dateCell->getCalculatedValue() === "" || $dateCell->getCalculatedValue === null) {
                 $shouldContinue = false;
                 continue;
             }
