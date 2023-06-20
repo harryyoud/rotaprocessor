@@ -59,6 +59,7 @@ class PilgrimGeneralSurgery extends AbstractSheetParser {
             ],
             'DAYS' => [['Days', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT12H30M')]],
             'DAYS 8-4' => [['Day Helper', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT8H30M')]],
+            'SICK' => [['Sick Leave', new DateTimeImmutable($startDate->format('Y-m-d') . '08:00:00'), new DateInterval('PT8H30M')]],
         };
     }
 }
