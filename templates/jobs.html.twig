@@ -21,7 +21,7 @@
             <tr>
                 <td>{{ job.createdAt | ago }}</td>
                 <td>{{ job.placement.name }}</td>
-                <td>{{ parsers[job.placement.processor].parserName }}</td>
+                <td>{{ parsers[job.placement.processor] }}</td>
                 <td>{{ job.statusAsString }}</td>
                 <td>
                     <button

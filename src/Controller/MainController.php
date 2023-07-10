@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Placement;
 use App\Entity\SyncJob;
 use App\Entity\User;
-use App\Entity\WebCalCalendar;
 use App\Entity\WebDavCalendar;
 use App\Form\DeleteEntityType;
 use App\Form\PlacementType;
@@ -14,7 +13,7 @@ use App\Form\WebDavCalendarType;
 use App\Message\NewRotaFileNotification;
 use App\Security\CalendarVoter;
 use App\Security\PlacementVoter;
-use App\SheetParsers\SheetParsers;
+use App\SheetParsers;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -25,7 +24,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
-use function Doctrine\ORM\QueryBuilder;
 
 #[Route('/my')]
 #[IsGranted('ROLE_USER')]

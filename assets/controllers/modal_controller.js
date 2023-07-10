@@ -9,7 +9,13 @@ export default class extends Controller {
         this.modalbodyTarget.innerHTML = "Loading..."
         // this.modaltitleTarget.innerHTML = event.currentTarget.dataset.title
         axios.get(event.currentTarget.dataset.url).then(resp => {
-            this.modalbodyTarget.innerHTML = `<pre>${JSON.stringify(resp.data, null, 2)}</pre>`
+            var out = "";
+            if (typeof resp.data === "object") {
+                out = JSON.stringify(resp.data);
+            } else {
+                out = resp.data
+            }
+            this.modalbodyTarget.innerHTML = `<pre>${out}</pre>`
         }).catch(reason => {
             this.modalbodyTarget.innerHTML = `Failed to fetch log data`
         });

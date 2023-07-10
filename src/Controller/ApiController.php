@@ -7,7 +7,7 @@ use App\Security\SyncJobVoter;
 use JsonException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api')]
@@ -17,13 +17,7 @@ class ApiController extends AbstractController {
 
     #[Route('/job/{id}/log', name: 'get_job_log_json')]
     #[IsGranted(SyncJobVoter::VIEW_LOGS, subject: 'job')]
-    public function getJobLog(SyncJob $job): JsonResponse {
-        $text = $job->getLog();
-        try {
-            json_decode($text, flags: JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
-            return new JsonResponse([$text]);
-        }
-        return new JsonResponse($text, json: true);
+    public function getJobLog(SyncJob $job): Response {
+        return new Response($job->getLog(), 200, ["Content-Type" => "text/plain"]);
     }
 }

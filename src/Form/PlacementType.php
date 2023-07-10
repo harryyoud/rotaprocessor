@@ -2,9 +2,8 @@
 
 namespace App\Form;
 
+use App\SheetParsers;
 use App\Entity\WebDavCalendar;
-use App\SheetParsers\SheetParser;
-use App\SheetParsers\SheetParsers;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -21,9 +20,7 @@ class PlacementType extends AbstractType {
         $builder
             ->add('name', TextType::class)
             ->add('processor', ChoiceType::class, [
-                'choices' => array_flip(array_map(function (SheetParser $parser) {
-                    return $parser::getParserName();
-                }, $this->parsers->getParsers())),
+                'choices' => array_flip($this->parsers->getParsers()),
             ])
             ->add('calendar', EntityType::class, [
                 'class' => WebDavCalendar::class,

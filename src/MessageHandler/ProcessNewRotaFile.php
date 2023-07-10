@@ -4,10 +4,9 @@ namespace App\MessageHandler;
 
 use App\Entity\Placement;
 use App\Entity\SyncJob;
-use App\Entity\WebCalCalendar;
 use App\Entity\WebDavCalendar;
 use App\Message\NewRotaFileNotification;
-use App\SheetParsers\SheetParsers;
+use App\SheetParsers;
 use Doctrine\ORM\EntityManagerInterface;
 use Error;
 use Exception;
@@ -20,7 +19,6 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Throwable;
 
 #[AsMessageHandler]
 class ProcessNewRotaFile {
@@ -37,45 +35,61 @@ class ProcessNewRotaFile {
         $this->em->persist($job);
         $this->em->flush();
 
+        $placement = $job->getPlacement();
+        $filename = $this->kernel->getProjectDir() . "/var/upload/" . $job->getFilename();
+        if (!array_key_exists($placement->getProcessor(), $this->parsers->getParsers())) {
+            throw new Error("Null parser");
+        }
+
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new DateTimeNormalizer(), new GetSetMethodNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+        $processorInput = $serializer->serialize([
+            'file_name' => $filename,
+            'looking_for' => $placement->getNameFilter(),
+            'sheet_name' => $placement->getSheetName(),
+            'parser_slug' => $placement->getProcessor(),
+        ], 'json');
+
+        $process = new Process([$this->kernel->getProjectDir() . '/' . 'exe/rota-rs']);
+        $process->setInput($processorInput);
+        $process->mustRun();
+        $process->wait();
+
+        $output = $process->getOutput();
+        $joutput = json_decode($output, associative: true);
+        if ($joutput === null) {
+            $job->markFailed($output);
+            $this->em->persist($job);
+            $this->em->flush();
+            return;
+        }
+        if (array_key_exists("errors", $joutput)) {
+            $job->markFailed("Errors:\n - " . join(separator: "\n - ", array: $joutput["errors"]));
+            $this->em->persist($job);
+            $this->em->flush();
+            return;
+        }
+
+        $shifts = $joutput['shifts'];
+
+        $calendar = $placement->getCalendar();
+        if (is_null($calendar)) {
+            $out = $this->handleIcal($placement, $shifts);
+        } else {
+            $out = $this->handleCaldav($calendar, $placement, $shifts);
+        }
         try {
-            $placement = $job->getPlacement();
-            $parser = $this->parsers->getParser($placement->getProcessor());
-            if (is_null($parser)) {
-                throw new Error("Null parser");
-            }
-            $sheet = $this->loadSheet($this->kernel->getProjectDir() . "/var/upload/" . $job->getFilename(), $placement->getSheetName());
+            unlink($filename);
+        } catch (Exception $e) {
+        }
 
-            $parser->setSheet($sheet);
-            $parser->setNameFilter($placement->getNameFilter());
+        $result = json_decode($out, associative: true);
 
-            $shifts = $parser->getShifts();
-            $calendar = $placement->getCalendar();
-
-            if (is_null($calendar)) {
-                $out = $this->handleIcal($placement, $shifts);
-            } else {
-                $out = $this->handleCaldav($calendar, $placement, $shifts);
-            }
-            try {
-                unlink($this->kernel->getProjectDir() . "/var/upload/" . $job->getFilename());
-            } catch (Exception $e) {
-            }
-
-            $result = json_decode($out, associative: true);
-
-            if (array_key_exists("error", $result)) {
-                $job->markFailed($out);
-            } else {
-                $job->markSuccess($out);
-            }
-
-        } catch (Throwable $e) {
-            $job->markFailed(json_encode([
-                'type' => $e::class,
-                'where' => 'PHP - ' . $e->getFile() . ':' . $e->getLine(),
-                'detail' => $e->getMessage(),
-                'reason' => 'No reason',
-            ]));
+        if (array_key_exists("error", $result)) {
+            $job->markFailed($out);
+        } else {
+            $job->markSuccess($out);
         }
 
         $this->em->persist($job);

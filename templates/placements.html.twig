@@ -17,7 +17,7 @@
         {% for placement in placements %}
         <tr>
             <td>{{ placement.name }}</td>
-            <td>{{ parsers[placement.processor].parserName }}</td>
+            <td>{{ parsers[placement.processor] }}</td>
             <td>
                 {% if placement.calendar %}
                     {{ placement.calendar.name }}
