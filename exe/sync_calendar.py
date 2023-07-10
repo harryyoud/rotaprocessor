@@ -17,9 +17,9 @@ def add_shift_to_calendar(shift, calendar, config, reuse_event=None):
             calendar.client,
             data=caldav.vcal.create_ical(ical_fragment=None, objtype='VEVENT', ical_data={}),
             parent=calendar)
-    set_or_add_attr(event, 'dtstart', datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M:%S%z').replace(tzinfo=None))
-    set_or_add_attr(event, 'dtend', datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M:%S%z').replace(tzinfo=None))
-    set_or_add_attr(event, 'summary', f"{config['prefix']}{shift['type']}")
+    set_or_add_attr(event, 'dtstart', datetime.strptime(shift['start'], '%Y-%m-%dT%H:%M:%S').replace(tzinfo=None))
+    set_or_add_attr(event, 'dtend', datetime.strptime(shift['end'], '%Y-%m-%dT%H:%M:%S').replace(tzinfo=None))
+    set_or_add_attr(event, 'summary', f"{config['prefix']}{shift['title']}")
     set_or_add_attr(event, 'color', config['color'])
     set_or_add_attr(event, 'categories', [config['category']])
     event.save()
