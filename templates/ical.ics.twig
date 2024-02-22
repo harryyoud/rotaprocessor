@@ -12,7 +12,7 @@ DTSTART:{{ shift.start | date('Ymd') }}T{{ shift.start | date('His') }}
 DTEND:{{ shift.end | date('Ymd') }}T{{ shift.end | date('His') }}
 CATEGORIES:{{ placement.calendarCategory }}
 ICAL-DATA:{}
-SUMMARY:{{ placement.prefix }}{{ shift.type }}
+SUMMARY:{{ placement.prefix }}{{ shift.title }}
 END:VEVENT
 {% endfor %}
 END:VCALENDAR
