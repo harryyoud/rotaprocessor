@@ -37,9 +37,12 @@ def set_or_add_attr(event, attr_name, attr_value):
 def get_existing_shifts(calendar, configured_category):
     existing_shifts = []
     for event in calendar.events():
-        if any(cat.value[0] == configured_category for cat in
-               event.vobject_instance.vevent.contents['categories']):
-            existing_shifts.append(event)
+        try:
+            if any(cat.value[0] == configured_category for cat in
+                event.vobject_instance.vevent.contents['categories']):
+                existing_shifts.append(event)
+        except:
+            pass
     return existing_shifts
 
 
