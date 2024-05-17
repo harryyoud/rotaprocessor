@@ -40,8 +40,8 @@ class AdminController extends AbstractController {
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            foreach ([$user->getPlacements(), $user->getCalendars(), $user->getJobs(),
-                         $user->getInvites()] as $item) {
+            foreach ([...$user->getPlacements(), ...$user->getCalendars(),
+                         ...$user->getJobs(), ...$user->getInvites()] as $item) {
                 $this->em->remove($item);
             }
             $this->em->remove($user);
