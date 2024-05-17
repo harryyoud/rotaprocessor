@@ -5,16 +5,15 @@ namespace App\Controller;
 use App\Entity\Invite;
 use App\Entity\User;
 use App\Form\DeleteEntityType;
-use App\Form\InviteType;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin')]
 #[IsGranted('ROLE_ADMIN')]
@@ -49,7 +48,7 @@ class AdminController extends AbstractController {
             $this->addFlash("success", "User deleted successfully");
             return $this->redirectToRoute('list_users');
         }
-        return $this->renderForm('user_delete.html.twig', [
+        return $this->render('user_delete.html.twig', [
             'placement' => $user,
             'form' => $form,
         ]);
@@ -86,7 +85,7 @@ class AdminController extends AbstractController {
             }
             return $this->redirectToRoute('list_users');
         }
-        return $this->renderForm('user_edit.html.twig', [
+        return $this->render('user_edit.html.twig', [
             'form' => $form
         ]);
     }
@@ -120,7 +119,7 @@ class AdminController extends AbstractController {
             $this->addFlash("success", "Invite revoked successfully");
             return $this->redirectToRoute('list_invites');
         }
-        return $this->renderForm('invite_revoke.html.twig', [
+        return $this->render('invite_revoke.html.twig', [
             'invite' => $invite,
             'form' => $form,
         ]);

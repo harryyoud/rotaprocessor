@@ -8,12 +8,13 @@ use App\Form\DeleteEntityType;
 use App\Form\InviteType;
 use App\Form\ProfileType;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
 #[Route('/profile')]
@@ -44,19 +45,23 @@ class ProfileController extends AbstractController {
             $this->addFlash("success", "User changes submitted");
             return $this->redirectToRoute('profile');
         }
-        return $this->renderForm('profile.html.twig', [
+        return $this->render('profile.html.twig', [
             'form' => $form
         ]);
 
     }
 
     #[Route('/invites', name: 'my_invites')]
-    public function getInviteLinks(Request $request): Response {
+    public function getInviteLinks(): Response {
+        $user = $this->getUser();
+        if (!($user instanceof User)) {
+            throw new HttpException(500, "UserInterface not instance of User");
+        }
         $qb = $this->em->createQueryBuilder()
             ->select('i')
             ->from(Invite::class, 'i')
             ->where('i.owner = :owner')
-            ->setParameter('owner', $this->getUser()->getId()->toBinary())
+            ->setParameter('owner', $user->getId()->toBinary())
             ->orderBy('i.createdAt', 'DESC');
         return $this->render('invites_mine.html.twig', [
             'invites' => $qb->getQuery()->getResult(),
@@ -79,7 +84,7 @@ class ProfileController extends AbstractController {
             $this->addFlash("success", "Invite revoked successfully");
             return $this->redirectToRoute('my_invites');
         }
-        return $this->renderForm('invite_revoke.html.twig', [
+        return $this->render('invite_revoke.html.twig', [
             'invite' => $invite,
             'form' => $form,
         ]);
@@ -114,7 +119,7 @@ class ProfileController extends AbstractController {
             $this->addFlash("success", "Invite created successfully");
             return $this->redirectToRoute('my_invites');
         }
-        return $this->renderForm('invite_new.html.twig', [
+        return $this->render('invite_new.html.twig', [
             'form' => $form
         ]);
     }

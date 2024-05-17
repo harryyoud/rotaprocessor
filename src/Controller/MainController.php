@@ -16,13 +16,13 @@ use App\Security\PlacementVoter;
 use App\SheetParsers;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Uid\Uuid;
 
 #[Route('/my')]
@@ -111,7 +111,7 @@ class MainController extends AbstractController {
             }
             return $this->redirectToRoute('list_placements');
         }
-        return $this->renderForm('placement_edit.html.twig', [
+        return $this->render('placement_edit.html.twig', [
             'form' => $form
         ]);
     }
@@ -153,7 +153,7 @@ class MainController extends AbstractController {
             }
             return $this->redirectToRoute('list_calendars');
         }
-        return $this->renderForm('calendar_edit.html.twig', [
+        return $this->render('calendar_edit.html.twig', [
             'form' => $form
         ]);
     }
@@ -227,7 +227,7 @@ class MainController extends AbstractController {
             $this->addFlash("success", "Job submitted; now awaiting processing");
             return $this->redirectToRoute('list_jobs_by_placement', ['id' => $placement->getId()]);
         }
-        return $this->renderForm('upload.html.twig', [
+        return $this->render('upload.html.twig', [
             'placement' => $placement,
             'form' => $form,
         ]);
@@ -248,7 +248,7 @@ class MainController extends AbstractController {
             $this->addFlash("success", "Placement deleted successfully");
             return $this->redirectToRoute('list_placements');
         }
-        return $this->renderForm('placement_delete.html.twig', [
+        return $this->render('placement_delete.html.twig', [
             'placement' => $placement,
             'form' => $form,
         ]);
@@ -263,7 +263,7 @@ class MainController extends AbstractController {
         if ($form->isSubmitted() && $form->isValid()) {
             if (count($calendar->getPlacements()) > 0) {
                 $this->addFlash("danger", "Calendar has attached placements, please delete these first");
-                return $this->renderForm('calendar_delete.html.twig', [
+                return $this->render('calendar_delete.html.twig', [
                     'calendar' => $calendar,
                     'form' => $form,
                 ]);
@@ -273,7 +273,7 @@ class MainController extends AbstractController {
             $this->addFlash("success", "Calendar deleted successfully");
             return $this->redirectToRoute('list_calendars');
         }
-        return $this->renderForm('calendar_delete.html.twig', [
+        return $this->render('calendar_delete.html.twig', [
             'calendar' => $calendar,
             'form' => $form,
         ]);

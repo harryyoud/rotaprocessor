@@ -59,7 +59,7 @@ class SecurityController extends AbstractController {
             $this->addFlash("success", "User account created successfully");
             return $this->redirectToRoute('app_login');
         }
-        return $this->renderForm('signup_with_invite.html.twig', [
+        return $this->render('signup_with_invite.html.twig', [
             'form' => $form,
             'invite' => $invite,
         ]);
