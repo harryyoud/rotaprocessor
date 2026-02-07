@@ -16,59 +16,72 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 
 class UserType extends AbstractType {
-    public function __construct() {
-    }
+    public function __construct() {}
 
-    public function buildForm(FormBuilderInterface $builder, array $options): void {
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options,
+    ): void {
         $builder
-            ->add('name', TextType::class, [
-                'attr' => ['autocomplete' => 'off',],
+            ->add("name", TextType::class, [
+                "attr" => ["autocomplete" => "off"],
             ])
-            ->add('email', TextType::class, [
-                'attr' => ['autocomplete' => 'off',],
-                'constraints' => [
-                    new Email(),
-                ]
+            ->add("email", TextType::class, [
+                "attr" => ["autocomplete" => "off"],
+                "constraints" => [new Email()],
             ])
-            ->add('password', RepeatedType::class, [
-                'attr' => ['autocomplete' => 'off',],
-                'type' => PasswordType::class,
-                'mapped' => false,
-                'required' => $options['new_user'],
-                'first_options' => [
-                    'label' => 'Password',
-                    'help' => $options['new_user'] ? '' : 'Leave blank to leave unchanged',
+            ->add("password", RepeatedType::class, [
+                "attr" => ["autocomplete" => "off"],
+                "type" => PasswordType::class,
+                "mapped" => false,
+                "required" => $options["new_user"],
+                "first_options" => [
+                    "label" => "Password",
+                    "help" => $options["new_user"]
+                        ? ""
+                        : "Leave blank to leave unchanged",
                 ],
-                'second_options' => [
-                    'label' => 'Repeat password',
+                "second_options" => [
+                    "label" => "Repeat password",
                 ],
             ])
-            ->add('maxInvites', IntegerType::class, [
-                'help' => 'Number of invites to create an account this user can create',
+            ->add("maxInvites", IntegerType::class, [
+                "help" =>
+                    "Number of invites to create an account this user can create",
             ])
-            ->add('admin', CheckboxType::class, [
-                'attr' => ['autocomplete' => 'off',],
-                'required' => false,
-                'getter' => fn(User $user, FormInterface $form) => $user->isAdmin(),
-                'setter' => function (User &$user, bool $admin, FormInterface $form) {
+            ->add("admin", CheckboxType::class, [
+                "attr" => ["autocomplete" => "off"],
+                "required" => false,
+                "getter" => fn(
+                    User $user,
+                    FormInterface $form,
+                ) => $user->isAdmin(),
+                "setter" => function (
+                    User &$user,
+                    bool $admin,
+                    FormInterface $form,
+                ) {
                     if ($admin) {
-                        if (!in_array('ROLE_ADMIN', $user->getRoles())) {
-                            $user->setRoles(array_merge($user->getRoles(), ['ROLE_ADMIN']));
+                        if (!in_array("ROLE_ADMIN", $user->getRoles())) {
+                            $user->setRoles(
+                                array_merge($user->getRoles(), ["ROLE_ADMIN"]),
+                            );
                         }
                     } else {
-                        $user->setRoles(array_filter($user->getRoles(), function ($role) {
-                            return $role !== 'ROLE_ADMIN';
-                        }));
+                        $user->setRoles(
+                            array_filter($user->getRoles(), function ($role) {
+                                return $role !== "ROLE_ADMIN";
+                            }),
+                        );
                     }
                 },
             ])
-            ->add('save', SubmitType::class);
+            ->add("save", SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver) {
+    public function configureOptions(OptionsResolver $resolver): void {
         $resolver->setDefaults([
-            'new_user' => false,
+            "new_user" => false,
         ]);
     }
-
 }

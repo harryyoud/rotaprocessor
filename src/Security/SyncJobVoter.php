@@ -5,10 +5,11 @@ namespace App\Security;
 use App\Entity\SyncJob;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class SyncJobVoter extends Voter {
-    const VIEW_LOGS = 'view_logs';
+    const VIEW_LOGS = "view_logs";
 
     /**
      * @inheritDoc
@@ -28,7 +29,12 @@ class SyncJobVoter extends Voter {
     /**
      * @inheritDoc
      */
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool {
+    protected function voteOnAttribute(
+        string $attribute,
+        mixed $subject,
+        TokenInterface $token,
+        ?Vote $vote = null,
+    ): bool {
         /** @var SyncJob $subject */
 
         $user = $token->getUser();

@@ -5,11 +5,12 @@ namespace App\Security;
 use App\Entity\User;
 use App\Entity\WebDavCalendar;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class CalendarVoter extends Voter {
-    const EDIT = 'edit';
-    const DELETE = 'delete';
+    const EDIT = "edit";
+    const DELETE = "delete";
 
     /**
      * @inheritDoc
@@ -29,7 +30,12 @@ class CalendarVoter extends Voter {
     /**
      * @inheritDoc
      */
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool {
+    protected function voteOnAttribute(
+        string $attribute,
+        mixed $subject,
+        TokenInterface $token,
+        ?Vote $vote = null,
+    ): bool {
         /** @var WebDavCalendar $subject */
 
         $user = $token->getUser();

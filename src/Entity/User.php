@@ -13,8 +13,8 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity]
 class User implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\Column(type: "uuid", unique: true)]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private ?Uuid $id = null;
 
@@ -33,16 +33,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\Column(options: ["default" => 0])]
     private int $maxInvites = 0;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: SyncJob::class)]
+    #[ORM\OneToMany(mappedBy: "owner", targetEntity: SyncJob::class)]
     private ?Collection $jobs = null;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Placement::class)]
+    #[ORM\OneToMany(mappedBy: "owner", targetEntity: Placement::class)]
     private ?Collection $placements = null;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: WebDavCalendar::class)]
+    #[ORM\OneToMany(mappedBy: "owner", targetEntity: WebDavCalendar::class)]
     private ?Collection $calendars = null;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Invite::class)]
+    #[ORM\OneToMany(mappedBy: "owner", targetEntity: Invite::class)]
     private ?Collection $invites = null;
 
     public function __construct() {
@@ -67,7 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     }
 
     public function getUserIdentifier(): string {
-        return (string)$this->email;
+        return (string) $this->email;
     }
 
     public function getPassword(): string {
@@ -78,9 +78,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
         $this->password = $password;
 
         return $this;
-    }
-
-    public function eraseCredentials() {
     }
 
     public function getName(): ?string {
@@ -121,7 +118,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     public function getRoles(): array {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles[] = "ROLE_USER";
 
         return array_unique($roles);
     }
