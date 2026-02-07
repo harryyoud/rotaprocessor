@@ -24,14 +24,8 @@ class SyncJob {
     #[ORM\Column]
     private ?int $status = null;
 
-    #[ORM\ManyToOne(targetEntity: Placement::class, inversedBy: 'jobs')]
-    private ?Placement $placement = null;
-
     #[ORM\Column(type: 'text', nullable: false)]
     private string $log = "";
-
-    #[ORM\Column(length: 255)]
-    private string $filename = "";
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'jobs')]
     private ?User $owner = null;
@@ -39,9 +33,9 @@ class SyncJob {
     #[ORM\Column(type: 'datetime_immutable')]
     private ?DateTimeImmutable $createdAt = null;
 
-    public function __construct(Placement $placement, string $filename) {
-        $this->placement = $placement;
-        $this->filename = $filename;
+    public function __construct(#[ORM\ManyToOne(targetEntity: Placement::class, inversedBy: 'jobs')]
+    private ?Placement $placement, #[ORM\Column(length: 255)]
+    private string $filename) {
         $this->status = static::STATUS_CREATED;
     }
 

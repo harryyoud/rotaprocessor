@@ -41,8 +41,8 @@ class ProcessNewRotaFile {
             throw new Error("Null parser");
         }
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new DateTimeNormalizer(), new GetSetMethodNormalizer());
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new DateTimeNormalizer(), new GetSetMethodNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
         $processorInput = $serializer->serialize([
             'file_name' => $filename,
@@ -65,7 +65,7 @@ class ProcessNewRotaFile {
             return;
         }
         if (array_key_exists("errors", $joutput)) {
-            $job->markFailed("Errors:\n - " . join(separator: "\n - ", array: $joutput["errors"]));
+            $job->markFailed("Errors:\n - " . implode(separator: "\n - ", array: $joutput["errors"]));
             $this->em->persist($job);
             $this->em->flush();
             return;
@@ -81,10 +81,10 @@ class ProcessNewRotaFile {
         }
         try {
             unlink($filename);
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
 
-        $result = json_decode($out, associative: true);
+        $result = json_decode((string) $out, associative: true);
 
         if (array_key_exists("error", $result)) {
             $job->markFailed($out);
@@ -103,8 +103,8 @@ class ProcessNewRotaFile {
     }
 
     private function handleIcal(Placement $placement, $shifts) {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new DateTimeNormalizer(), new GetSetMethodNormalizer());
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new DateTimeNormalizer(), new GetSetMethodNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
         $dataJson = $serializer->serialize($shifts, 'json');
         $placement->setShifts($dataJson);
@@ -126,8 +126,8 @@ class ProcessNewRotaFile {
             'shifts' => $shifts,
         ];
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new DateTimeNormalizer(), new GetSetMethodNormalizer());
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new DateTimeNormalizer(), new GetSetMethodNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
         $dataJson = $serializer->serialize($data, 'json');
 

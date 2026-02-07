@@ -60,7 +60,7 @@ class UserType extends AbstractType {
                     User &$user,
                     bool $admin,
                     FormInterface $form,
-                ) {
+                ): void {
                     if ($admin) {
                         if (!in_array("ROLE_ADMIN", $user->getRoles())) {
                             $user->setRoles(
@@ -69,9 +69,7 @@ class UserType extends AbstractType {
                         }
                     } else {
                         $user->setRoles(
-                            array_filter($user->getRoles(), function ($role) {
-                                return $role !== "ROLE_ADMIN";
-                            }),
+                            array_filter($user->getRoles(), fn($role) => $role !== "ROLE_ADMIN"),
                         );
                     }
                 },

@@ -21,35 +21,35 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Uid\Uuid;
 
-#[Route('/my')]
-#[IsGranted('ROLE_USER')]
+#[Route("/my")]
+#[IsGranted("ROLE_USER")]
 class MainController extends AbstractController {
     public function __construct(
-        private readonly SheetParsers           $parsers,
+        private readonly SheetParsers $parsers,
         private readonly EntityManagerInterface $em,
-        private readonly KernelInterface        $kernel,
-        private readonly MessageBusInterface    $bus,
-        private readonly PaginatorInterface     $paginator,
-    ) {
-    }
+        private readonly KernelInterface $kernel,
+        private readonly MessageBusInterface $bus,
+        private readonly PaginatorInterface $paginator,
+    ) {}
 
-    #[Route('/placements', name: 'list_placements')]
+    #[Route("/placements", name: "list_placements")]
     public function listPlacements(): Response {
-        $placements = $this->em->createQueryBuilder()
-            ->select('p')
-            ->from(Placement::class, 'p')
-            ->where('p.owner = :owner')
-            ->setParameter('owner', $this->getUser()->getId()->toBinary())
-            ->orderBy('p.name', 'ASC')
-            ->getQuery()->execute();
+        $placements = $this->em
+            ->createQueryBuilder()
+            ->select("p")
+            ->from(Placement::class, "p")
+            ->where("p.owner = :owner")
+            ->setParameter("owner", $this->getUser()->getId()->toBinary())
+            ->orderBy("p.name", "ASC")
+            ->getQuery()
+            ->execute();
         $parsers = $this->parsers->getParsers();
-        return $this->render('placements.html.twig', [
-            'placements' => $placements,
-            'parsers' => $parsers,
+        return $this->render("placements.html.twig", [
+            "placements" => $placements,
+            "parsers" => $parsers,
         ]);
     }
 
@@ -61,36 +61,43 @@ class MainController extends AbstractController {
         return $user;
     }
 
-    #[Route('/placement/{id}/jobs', name: 'list_jobs_by_placement')]
-    #[IsGranted(PlacementVoter::VIEW_JOBS, subject: 'placement')]
-    public function listJobsByPlacement(Placement $placement, Request $request): Response {
-        $qb = $this->em->createQueryBuilder()
-            ->select('j')
-            ->from(SyncJob::class, 'j')
-            ->where('j.placement = :placement')
-            ->setParameter('placement', $placement->getId()->toBinary())
-            ->orderBy('j.createdAt', 'DESC');
+    #[Route("/placement/{id}/jobs", name: "list_jobs_by_placement")]
+    #[IsGranted(PlacementVoter::VIEW_JOBS, subject: "placement")]
+    public function listJobsByPlacement(
+        Placement $placement,
+        Request $request,
+    ): Response {
+        $qb = $this->em
+            ->createQueryBuilder()
+            ->select("j")
+            ->from(SyncJob::class, "j")
+            ->where("j.placement = :placement")
+            ->setParameter("placement", $placement->getId()->toBinary())
+            ->orderBy("j.createdAt", "DESC");
         $parsers = $this->parsers->getParsers();
         $pagination = $this->paginator->paginate(
             $qb,
-            $request->query->getInt('page', 1),
-            10
+            $request->query->getInt("page", 1),
+            10,
         );
-        return $this->render('jobs.html.twig', [
-            'pagination' => $pagination,
-            'placement' => $placement,
-            'parsers' => $parsers,
+        return $this->render("jobs.html.twig", [
+            "pagination" => $pagination,
+            "placement" => $placement,
+            "parsers" => $parsers,
         ]);
     }
 
-    #[Route('/placement/new', name: 'new_placement')]
+    #[Route("/placement/new", name: "new_placement")]
     public function newPlacement(Request $request): Response {
         return $this->editPlacement(new Placement(), $request);
     }
 
-    #[Route('/placement/{id}/edit', name: 'edit_placement')]
-    #[IsGranted(PlacementVoter::EDIT, subject: 'placement')]
-    public function editPlacement(Placement $placement, Request $request): Response {
+    #[Route("/placement/{id}/edit", name: "edit_placement")]
+    #[IsGranted(PlacementVoter::EDIT, subject: "placement")]
+    public function editPlacement(
+        Placement $placement,
+        Request $request,
+    ): Response {
         $isNew = is_null($placement->getId());
         $form = $this->createForm(PlacementType::class, $placement);
         $prevCalendar = $placement->getCalendar();
@@ -109,39 +116,45 @@ class MainController extends AbstractController {
             } else {
                 $this->addFlash("success", "Placement changes submitted");
             }
-            return $this->redirectToRoute('list_placements');
+            return $this->redirectToRoute("list_placements");
         }
-        return $this->render('placement_edit.html.twig', [
-            'form' => $form
+        return $this->render("placement_edit.html.twig", [
+            "form" => $form,
         ]);
     }
 
-    #[Route('/calendars', name: 'list_calendars')]
+    #[Route("/calendars", name: "list_calendars")]
     public function listCalendars(): Response {
         $calendars = $this->getUser()->getCalendars();
-        return $this->render('calendars.html.twig', [
-            'calendars' => $calendars,
+        return $this->render("calendars.html.twig", [
+            "calendars" => $calendars,
         ]);
     }
 
-    #[Route('/calendar/new', name: 'new_calendar')]
+    #[Route("/calendar/new", name: "new_calendar")]
     public function newCalendar(Request $request): Response {
         return $this->editCalendar(new WebDavCalendar(), $request);
     }
 
-    #[Route('/calendar/{id}/edit', name: 'edit_calendar')]
-    #[IsGranted(CalendarVoter::EDIT, subject: 'calendar')]
-    public function editCalendar(WebDavCalendar $calendar, Request $request): Response {
+    #[Route("/calendar/{id}/edit", name: "edit_calendar")]
+    #[IsGranted(CalendarVoter::EDIT, subject: "calendar")]
+    public function editCalendar(
+        WebDavCalendar $calendar,
+        Request $request,
+    ): Response {
         $isNew = is_null($calendar->getId());
         $form = $this->createForm(WebDavCalendarType::class, $calendar, [
-            'new_calendar' => $isNew,
+            "new_calendar" => $isNew,
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var WebDavCalendar $calendar */
             $calendar = $form->getData();
-            if (!is_null($form->get('password')->getData()) && !empty($form->get('password')->getData())) {
-                $calendar->setPassword($form['password']->getData());
+            if (
+                !is_null($form->get("password")->getData()) &&
+                !empty($form->get("password")->getData())
+            ) {
+                $calendar->setPassword($form["password"]->getData());
             }
             $calendar->setOwner($this->getUser());
             $this->em->persist($calendar);
@@ -151,71 +164,90 @@ class MainController extends AbstractController {
             } else {
                 $this->addFlash("success", "Calendar changes submitted");
             }
-            return $this->redirectToRoute('list_calendars');
+            return $this->redirectToRoute("list_calendars");
         }
-        return $this->render('calendar_edit.html.twig', [
-            'form' => $form
+        return $this->render("calendar_edit.html.twig", [
+            "form" => $form,
         ]);
     }
 
-    #[Route('/jobs', name: 'list_jobs')]
+    #[Route("/jobs", name: "list_jobs")]
     public function listJobs(Request $request): Response {
-        $qb = $this->em->createQueryBuilder()
-            ->select('j')
-            ->from(SyncJob::class, 'j')
-            ->where('j.owner = :owner')
-            ->setParameter('owner', $this->getUser()->getId()->toBinary())
-            ->orderBy('j.createdAt', 'DESC');
+        $qb = $this->em
+            ->createQueryBuilder()
+            ->select("j")
+            ->from(SyncJob::class, "j")
+            ->where("j.owner = :owner")
+            ->setParameter("owner", $this->getUser()->getId()->toBinary())
+            ->orderBy("j.createdAt", "DESC");
         $parsers = $this->parsers->getParsers();
         $pagination = $this->paginator->paginate(
             $qb,
-            $request->query->getInt('page', 1),
-            10
+            $request->query->getInt("page", 1),
+            10,
         );
-        return $this->render('jobs.html.twig', [
-            'pagination' => $pagination,
-            'parsers' => $parsers,
+        return $this->render("jobs.html.twig", [
+            "pagination" => $pagination,
+            "parsers" => $parsers,
         ]);
     }
 
-    #[Route('/jobs/pending', name: 'list_pending_jobs')]
+    #[Route("/jobs/pending", name: "list_pending_jobs")]
     public function listIncompleteJobs(): Response {
         $qb = $this->em->createQueryBuilder();
         $qb = $qb
-            ->select('j')
-            ->from(SyncJob::class, 'j')
-            ->where($qb->expr()->andX(
-                $qb->expr()->orX(
-                    $qb->expr()->eq('j.status', SyncJob::STATUS_PENDING),
-                    $qb->expr()->eq('j.status', SyncJob::STATUS_CREATED),
-                ),
-                $qb->expr()->eq('j.owner', $this->getUser()->getId()->toBinary()),
-            ));
-        $jobs = $qb->getQuery()->execute();;
+            ->select("j")
+            ->from(SyncJob::class, "j")
+            ->where(
+                $qb
+                    ->expr()
+                    ->andX(
+                        $qb
+                            ->expr()
+                            ->orX(
+                                $qb
+                                    ->expr()
+                                    ->eq("j.status", SyncJob::STATUS_PENDING),
+                                $qb
+                                    ->expr()
+                                    ->eq("j.status", SyncJob::STATUS_CREATED),
+                            ),
+                        $qb
+                            ->expr()
+                            ->eq(
+                                "j.owner",
+                                $this->getUser()->getId()->toBinary(),
+                            ),
+                    ),
+            );
+        $jobs = $qb->getQuery()->execute();
         $parsers = $this->parsers->getParsers();
-        return $this->render('jobs.html.twig', [
-            'jobs' => array_reverse($jobs),
-            'parsers' => $parsers,
+        return $this->render("jobs.html.twig", [
+            "jobs" => array_reverse($jobs),
+            "parsers" => $parsers,
         ]);
     }
 
-    #[Route('/placements/{id}/upload', name: 'upload')]
-    #[IsGranted(PlacementVoter::UPLOAD, subject: 'placement')]
-    public function newUpload(Placement $placement, Request $request): Response {
+    #[Route("/placements/{id}/upload", name: "upload")]
+    #[IsGranted(PlacementVoter::UPLOAD, subject: "placement")]
+    public function newUpload(
+        Placement $placement,
+        Request $request,
+    ): Response {
         $stuff = [];
 
         $form = $this->createForm(RotaSheetType::class, $stuff);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $file = $form['file']->getData();
+            $file = $form["file"]->getData();
             $extension = $file->guessExtension();
             if (!$extension) {
                 // extension cannot be guessed
-                $extension = 'bin';
+                $extension = "bin";
             }
-            $folder = $this->kernel->getProjectDir() . '/var/upload/';
-            $filename = Uuid::v4()->toRfc4122() . '.' . $extension;
+            $folder = $this->kernel->getProjectDir() . "/var/upload/";
+            $filename = Uuid::v4()->toRfc4122() . "." . $extension;
             $file->move($folder, $filename);
 
             $job = new SyncJob($placement, $filename);
@@ -224,18 +256,26 @@ class MainController extends AbstractController {
             $this->em->flush();
             $this->bus->dispatch(new NewRotaFileNotification($job->getId()));
 
-            $this->addFlash("success", "Job submitted; now awaiting processing");
-            return $this->redirectToRoute('list_jobs_by_placement', ['id' => $placement->getId()]);
+            $this->addFlash(
+                "success",
+                "Job submitted; now awaiting processing",
+            );
+            return $this->redirectToRoute("list_jobs_by_placement", [
+                "id" => $placement->getId(),
+            ]);
         }
-        return $this->render('upload.html.twig', [
-            'placement' => $placement,
-            'form' => $form,
+        return $this->render("upload.html.twig", [
+            "placement" => $placement,
+            "form" => $form,
         ]);
     }
 
-    #[Route('/placement/{id}/delete', name: 'delete_placement')]
-    #[IsGranted(PlacementVoter::DELETE, subject: 'placement')]
-    public function deletePlacement(Placement $placement, Request $request): Response {
+    #[Route("/placement/{id}/delete", name: "delete_placement")]
+    #[IsGranted(PlacementVoter::DELETE, subject: "placement")]
+    public function deletePlacement(
+        Placement $placement,
+        Request $request,
+    ): Response {
         $form = $this->createForm(DeleteEntityType::class, []);
 
         $form->handleRequest($request);
@@ -246,36 +286,42 @@ class MainController extends AbstractController {
             }
             $this->em->flush();
             $this->addFlash("success", "Placement deleted successfully");
-            return $this->redirectToRoute('list_placements');
+            return $this->redirectToRoute("list_placements");
         }
-        return $this->render('placement_delete.html.twig', [
-            'placement' => $placement,
-            'form' => $form,
+        return $this->render("placement_delete.html.twig", [
+            "placement" => $placement,
+            "form" => $form,
         ]);
     }
 
-    #[Route('/calendar/{id}/delete', name: 'delete_calendar')]
-    #[IsGranted(CalendarVoter::DELETE, subject: 'calendar')]
-    public function deleteCalendar(WebDavCalendar $calendar, Request $request): Response {
+    #[Route("/calendar/{id}/delete", name: "delete_calendar")]
+    #[IsGranted(CalendarVoter::DELETE, subject: "calendar")]
+    public function deleteCalendar(
+        WebDavCalendar $calendar,
+        Request $request,
+    ): Response {
         $form = $this->createForm(DeleteEntityType::class, []);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             if (count($calendar->getPlacements()) > 0) {
-                $this->addFlash("danger", "Calendar has attached placements, please delete these first");
-                return $this->render('calendar_delete.html.twig', [
-                    'calendar' => $calendar,
-                    'form' => $form,
+                $this->addFlash(
+                    "danger",
+                    "Calendar has attached placements, please delete these first",
+                );
+                return $this->render("calendar_delete.html.twig", [
+                    "calendar" => $calendar,
+                    "form" => $form,
                 ]);
             }
             $this->em->remove($calendar);
             $this->em->flush();
             $this->addFlash("success", "Calendar deleted successfully");
-            return $this->redirectToRoute('list_calendars');
+            return $this->redirectToRoute("list_calendars");
         }
-        return $this->render('calendar_delete.html.twig', [
-            'calendar' => $calendar,
-            'form' => $form,
+        return $this->render("calendar_delete.html.twig", [
+            "calendar" => $calendar,
+            "form" => $form,
         ]);
     }
 }

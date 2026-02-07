@@ -12,67 +12,76 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin')]
-#[IsGranted('ROLE_ADMIN')]
+#[Route("/admin")]
+#[IsGranted("ROLE_ADMIN")]
 class AdminController extends AbstractController {
     public function __construct(
-        private readonly EntityManagerInterface      $em,
+        private readonly EntityManagerInterface $em,
         private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly PaginatorInterface          $paginator,
-    ) {
-    }
+        private readonly PaginatorInterface $paginator,
+    ) {}
 
-    #[Route('/users', name: 'list_users')]
+    #[Route("/users", name: "list_users")]
     public function listUsers(): Response {
         $users = $this->em->getRepository(User::class)->findAll();
-        return $this->render('users.html.twig', [
-            'users' => $users,
+        return $this->render("users.html.twig", [
+            "users" => $users,
         ]);
     }
 
-    #[Route('/user/{id}/delete', name: 'delete_user')]
+    #[Route("/user/{id}/delete", name: "delete_user")]
     public function deleteUser(User $user, Request $request): Response {
         $form = $this->createForm(DeleteEntityType::class, []);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            foreach ([...$user->getPlacements(), ...$user->getCalendars(),
-                         ...$user->getJobs(), ...$user->getInvites()] as $item) {
+            foreach (
+                [
+                    ...$user->getPlacements(),
+                    ...$user->getCalendars(),
+                    ...$user->getJobs(),
+                    ...$user->getInvites(),
+                ]
+                as $item
+            ) {
                 $this->em->remove($item);
             }
             $this->em->remove($user);
             $this->em->flush();
             $this->addFlash("success", "User deleted successfully");
-            return $this->redirectToRoute('list_users');
+            return $this->redirectToRoute("list_users");
         }
-        return $this->render('user_delete.html.twig', [
-            'placement' => $user,
-            'form' => $form,
+        return $this->render("user_delete.html.twig", [
+            "placement" => $user,
+            "form" => $form,
         ]);
     }
 
-    #[Route('/user/new', name: 'new_user')]
+    #[Route("/user/new", name: "new_user")]
     public function newUser(Request $request): Response {
         return $this->editUser(new User(), $request);
     }
 
-    #[Route('/user/{id}/edit', name: 'edit_user')]
+    #[Route("/user/{id}/edit", name: "edit_user")]
     public function editUser(User $user, Request $request): Response {
         $isNew = is_null($user->getId());
         $form = $this->createForm(UserType::class, $user, [
-            'new_user' => $isNew,
+            "new_user" => $isNew,
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var User $user */
             $user = $form->getData();
-            if (!is_null($form->get('password')->getData()) && !empty($form->get('password')->getData())) {
+            if (
+                !is_null($form->get("password")->getData()) &&
+                !empty($form->get("password")->getData())
+            ) {
                 $hashedPassword = $this->passwordHasher->hashPassword(
                     $user,
-                    $form->get('password')->getData(),
+                    $form->get("password")->getData(),
                 );
                 $user->setPassword($hashedPassword);
             }
@@ -83,30 +92,31 @@ class AdminController extends AbstractController {
             } else {
                 $this->addFlash("success", "User changes submitted");
             }
-            return $this->redirectToRoute('list_users');
+            return $this->redirectToRoute("list_users");
         }
-        return $this->render('user_edit.html.twig', [
-            'form' => $form
+        return $this->render("user_edit.html.twig", [
+            "form" => $form,
         ]);
     }
 
-    #[Route('/invites', name: 'list_invites')]
+    #[Route("/invites", name: "list_invites")]
     public function getInviteLinks(Request $request): Response {
-        $qb = $this->em->createQueryBuilder()
-            ->select('i')
-            ->from(Invite::class, 'i')
-            ->orderBy('i.createdAt', 'DESC');
+        $qb = $this->em
+            ->createQueryBuilder()
+            ->select("i")
+            ->from(Invite::class, "i")
+            ->orderBy("i.createdAt", "DESC");
         $pagination = $this->paginator->paginate(
             $qb,
-            $request->query->getInt('page', 1),
-            10
+            $request->query->getInt("page", 1),
+            10,
         );
-        return $this->render('invites.html.twig', [
-            'pagination' => $pagination,
+        return $this->render("invites.html.twig", [
+            "pagination" => $pagination,
         ]);
     }
 
-    #[Route('/invite/{id}/revoke', name: 'revoke_invite')]
+    #[Route("/invite/{id}/revoke", name: "revoke_invite")]
     public function revokeInvite(Invite $invite, Request $request): Response {
         $form = $this->createForm(DeleteEntityType::class, []);
         $form->handleRequest($request);
@@ -117,11 +127,11 @@ class AdminController extends AbstractController {
             $this->em->persist($invite);
             $this->em->flush();
             $this->addFlash("success", "Invite revoked successfully");
-            return $this->redirectToRoute('list_invites');
+            return $this->redirectToRoute("list_invites");
         }
-        return $this->render('invite_revoke.html.twig', [
-            'invite' => $invite,
-            'form' => $form,
+        return $this->render("invite_revoke.html.twig", [
+            "invite" => $invite,
+            "form" => $form,
         ]);
     }
 }

@@ -10,33 +10,40 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController {
-
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly UserPasswordHasherInterface $passwordHasher,
     ) {}
 
-    #[Route(path: '/login', name: 'app_login')]
+    #[Route(path: "/login", name: "app_login")]
     public function login(AuthenticationUtils $authenticationUtils): Response {
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+        return $this->render("login.html.twig", [
+            "last_username" => $lastUsername,
+            "error" => $error,
+        ]);
     }
 
-    #[Route(path: '/logout', name: 'app_logout')]
+    #[Route(path: "/logout", name: "app_logout")]
     public function logout(): void {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        throw new \LogicException(
+            "This method can be blank - it will be intercepted by the logout key on your firewall.",
+        );
     }
 
-    #[Route('/signup/invite/{id}', name: 'signup_with_invite')]
-    public function signupWithInvite(Invite $invite, Request $request): Response {
+    #[Route("/signup/invite/{id}", name: "signup_with_invite")]
+    public function signupWithInvite(
+        Invite $invite,
+        Request $request,
+    ): Response {
         if ($invite->isUsed()) {
-            return $this->render('invite_expired.html.twig');
+            return $this->render("invite_expired.html.twig");
         }
 
         $form = $this->createForm(SignupType::class, new User());
@@ -45,7 +52,7 @@ class SecurityController extends AbstractController {
             $user = $form->getData();
             $hashedPassword = $this->passwordHasher->hashPassword(
                 $user,
-                $form->get('password')->getData(),
+                $form->get("password")->getData(),
             );
             $user->setPassword($hashedPassword);
             $this->em->persist($user);
@@ -57,11 +64,11 @@ class SecurityController extends AbstractController {
 
             $this->em->flush();
             $this->addFlash("success", "User account created successfully");
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute("app_login");
         }
-        return $this->render('signup_with_invite.html.twig', [
-            'form' => $form,
-            'invite' => $invite,
+        return $this->render("signup_with_invite.html.twig", [
+            "form" => $form,
+            "invite" => $invite,
         ]);
     }
 }

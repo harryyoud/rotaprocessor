@@ -5,10 +5,8 @@ namespace App\Message;
 use Symfony\Component\Uid\Uuid;
 
 class NewRotaFileNotification {
-    private Uuid $jobId;
-
-    public function __construct(Uuid $jobId) {
-        $this->jobId = $jobId;
+    public function __construct(private readonly Uuid $jobId)
+    {
     }
 
     public function getJobId(): Uuid {
